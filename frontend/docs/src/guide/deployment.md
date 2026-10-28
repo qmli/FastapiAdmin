@@ -139,32 +139,6 @@ server {
 }
 ```
 
-## 📱 移动端部署
-
-### H5 部署
-
-```bash
-cd FastapiAdmin/frontend/app
-pnpm install && pnpm run build:h5
-# 将 dist/build/h5 目录部署到 Nginx
-
-# Nginx 配置片段
-location /app {
-    alias /path/to/FastapiAdmin/frontend/app/dist/build/h5;
-    index index.html;
-    try_files $uri $uri/ /app/index.html;
-}
-```
-
-### 小程序部署
-
-```bash
-# 构建微信小程序
-pnpm run build:mp-weixin
-# 在微信开发者工具中导入 dist/build/mp-weixin 目录
-# 上传并提交审核
-```
-
 ## 🔧 常见部署问题
 
 | 问题 | 解决方案 |

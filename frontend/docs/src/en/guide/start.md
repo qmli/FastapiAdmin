@@ -9,7 +9,6 @@ description: "Spin up a working MVP in 15-30 minutes: prerequisites, source, Doc
 
 - Website: [https://service.fastapiadmin.com](https://service.fastapiadmin.com)
 - Web: [https://service.fastapiadmin.com/web](https://service.fastapiadmin.com/web)
-- Mobile: [https://service.fastapiadmin.com/app](https://service.fastapiadmin.com/app)
 - Demo account: `admin` / `123456` (**for the official demo site only — do not use in production**; change the default password immediately after first deployment)
 
 ## Prerequisites
@@ -21,8 +20,6 @@ description: "Spin up a working MVP in 15-30 minutes: prerequisites, source, Doc
 | Frontend | Node.js | ≥ 20.0 |
 | Frontend | pnpm | ≥ 9.0 |
 | Web UI | Element Plus | 2.10+ |
-| Mobile | UniApp | 3.0+ |
-| App UI | Wot Design Uni | 1.9+ |
 | Database | MySQL | 8.0+ / PostgreSQL 13+ / SQLite |
 | Middleware | Redis | 7.0+ |
 
@@ -76,11 +73,6 @@ cd FastapiAdmin/frontend/web
 pnpm install
 pnpm run dev
 
-# Mobile (UniApp)
-cd FastapiAdmin/frontend/app
-pnpm install
-pnpm run dev:h5
-
 # Documentation Site (VitePress)
 cd FastapiAdmin/frontend/docs
 pnpm install
@@ -92,7 +84,6 @@ pnpm run dev
 | Service | URL |
 |---------|-----|
 | Web Frontend | `http://127.0.0.1:5173` |
-| Mobile H5 | `http://127.0.0.1:8080` |
 | Documentation | `http://127.0.0.1:5174` |
 | Backend API | `http://127.0.0.1:8001` |
 | Swagger | `http://127.0.0.1:8001/docs` |

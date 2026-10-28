@@ -42,45 +42,27 @@
                       <p class="sub-title">{{ panelSubTitle }}</p>
                     </div>
 
-                    <template v-if="authPanel === 'login'">
-                      <template v-if="loginFlowMode === 'account'">
-                        <FaLoginAccountForm
-                          ref="accountFormRef"
-                          v-model:is-passing="isPassing"
-                          v-model:is-click-pass="isClickPass"
-                          v-model:login-form="loginForm"
-                          :rules="rules"
-                          :captcha-state="captchaState"
-                          :code-loading="codeLoading"
-                          :demo-account-key="demoAccountKey"
-                          :accounts="accounts"
-                          :form-key="formKey"
-                          :is-dark="isDark"
-                          :drag-verify-text-color="dragVerifyTextColor"
-                          :loading="loading"
-                          @submit="handleSubmit"
-                          @setup-account="setupAccount"
-                          @get-captcha="getCaptcha"
-                          @open-mobile="openMobileLogin"
-                          @open-qr="openQrLogin"
-                          @forget="setAuthPanel('forget')"
-                          @register="setAuthPanel('register')"
-                          @oauth="handleOAuthLogin"
-                        />
-                      </template>
-
-                      <FaLoginMobilePanel
-                        v-else-if="loginFlowMode === 'mobile'"
-                        @back="backToAccountLogin"
-                        @register="setAuthPanel('register')"
-                      />
-
-                      <FaLoginQrPanel
-                        v-else-if="loginFlowMode === 'qr'"
-                        @back="backToAccountLogin"
-                        @register="setAuthPanel('register')"
-                      />
-                    </template>
+                    <FaLoginAccountForm
+                      v-if="authPanel === 'login'"
+                      ref="accountFormRef"
+                      v-model:is-passing="isPassing"
+                      v-model:is-click-pass="isClickPass"
+                      v-model:login-form="loginForm"
+                      :rules="rules"
+                      :captcha-state="captchaState"
+                      :code-loading="codeLoading"
+                      :demo-account-key="demoAccountKey"
+                      :accounts="accounts"
+                      :form-key="formKey"
+                      :is-dark="isDark"
+                      :drag-verify-text-color="dragVerifyTextColor"
+                      :loading="loading"
+                      @submit="handleSubmit"
+                      @setup-account="setupAccount"
+                      @get-captcha="getCaptcha"
+                      @forget="setAuthPanel('forget')"
+                      @register="setAuthPanel('register')"
+                    />
 
                     <FaLoginRegisterPanel
                       v-else-if="authPanel === 'register'"
@@ -111,64 +93,6 @@
             </div>
           </ElScrollbar>
         </div>
-
-        <footer
-          class="login-page-footer login-page-footer--pinned shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
-          :class="panelAlign === 'center' && 'login-page-footer--floating-layout'"
-        >
-          <div class="login-footer-text text-sm">
-            <div class="login-footer-row">
-              <a
-                :href="configStore.configData?.git_code?.config_value || '#'"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="login-page-footer__link"
-              >
-                {{ configStore.configData?.copyright?.config_value || "" }}
-              </a>
-            </div>
-            <span class="login-page-footer__sep login-footer-sep-center">|</span>
-            <div class="login-footer-row">
-              <a
-                :href="configStore.configData?.help_doc?.config_value || '#'"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="login-page-footer__link"
-              >
-                帮助
-              </a>
-              <span class="login-page-footer__sep">|</span>
-              <a
-                :href="configStore.configData?.privacy?.config_value || '#'"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="login-page-footer__link"
-              >
-                隐私
-              </a>
-              <span class="login-page-footer__sep">|</span>
-              <a
-                :href="configStore.configData?.clause?.config_value || '#'"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="login-page-footer__link"
-              >
-                条款
-              </a>
-              <span
-                v-if="configStore.configData?.keep_record?.config_value"
-                class="login-page-footer__sep"
-                >|</span
-              >
-              <span
-                v-if="configStore.configData?.keep_record?.config_value"
-                class="login-page-footer__record"
-              >
-                {{ configStore.configData.keep_record.config_value }}
-              </span>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   </div>
@@ -176,15 +100,11 @@
 
 <script setup lang="ts">
 import type { LocationQuery, RouteLocationRaw } from "vue-router";
-import AuthAPI, {
-  type CaptchaInfo,
-  type LoginFormData,
-  type OAuthProvider,
-} from "@/api/module_system/auth";
+import AuthAPI, { type CaptchaInfo, type LoginFormData } from "@/api/module_system/auth";
 
 import UserAPI, { type ForgetPasswordForm, type RegisterForm } from "@/api/module_system/user";
 import { useConfigStore, useAppStore, useSettingsStore, useUserStore } from "@stores";
-import { Auth, HttpError, startOAuthLogin } from "@utils";
+import { HttpError } from "@utils";
 import { ElMessage, ElNotification } from "element-plus";
 import type { FormRules } from "element-plus";
 import type { Account, AccountKey } from "./types";
@@ -197,9 +117,6 @@ defineOptions({ name: "Login" });
 
 type AuthPanel = "login" | "register" | "forget";
 
-/** 登录区内：账号密码 ↔ 手机号 ↔ 扫码（扫码 / 手机号为演示交互） */
-type LoginFlowMode = "account" | "mobile" | "qr";
-
 const configStore = useConfigStore();
 const settingStore = useSettingsStore();
 const appStore = useAppStore();
@@ -209,28 +126,15 @@ const { t, locale } = useI18n();
 const { panelAlign } = useLoginPanelAlign();
 
 const authPanel = ref<AuthPanel>("login");
-const loginFlowMode = ref<LoginFlowMode>("account");
 
 const panelTitle = computed(() => {
   if (authPanel.value === "forget") return t("login.resetPassword");
-  if (
-    authPanel.value === "login" &&
-    (loginFlowMode.value === "mobile" || loginFlowMode.value === "qr")
-  ) {
-    return t("login.qrLoginTitle");
-  }
   return t("login.title");
 });
 
 const panelSubTitle = computed(() => {
   if (authPanel.value === "register") return t("register.subTitle");
   if (authPanel.value === "forget") return t("forgetPassword.subTitle");
-  if (authPanel.value === "login" && loginFlowMode.value === "mobile") {
-    return t("login.mobileLoginSubTitle");
-  }
-  if (authPanel.value === "login" && loginFlowMode.value === "qr") {
-    return t("login.qrLoginSubTitle");
-  }
   return t("login.subTitle");
 });
 
@@ -238,78 +142,11 @@ const userAgreementHref = computed(() => configStore.configData?.clause?.config_
 
 function setAuthPanel(panel: AuthPanel) {
   authPanel.value = panel;
-  if (panel !== "login") {
-    loginFlowMode.value = "account";
-  }
   nextTick(() => {
     accountFormRef.value?.clearValidate?.();
     registerPanelRef.value?.clearValidate?.();
     forgetPanelRef.value?.clearValidate?.();
   });
-}
-
-function openMobileLogin() {
-  loginFlowMode.value = "mobile";
-}
-
-function openQrLogin() {
-  loginFlowMode.value = "qr";
-}
-
-function backToAccountLogin() {
-  loginFlowMode.value = "account";
-  nextTick(() => {
-    getCaptcha();
-    accountFormRef.value?.resetDragVerify?.();
-    isPassing.value = false;
-    isClickPass.value = false;
-  });
-}
-
-function handleOAuthLogin(provider: OAuthProvider) {
-  startOAuthLogin(provider);
-}
-
-async function tryConsumeOAuthCallback() {
-  const q = route.query;
-  const oauthError = q.oauth_error as string | undefined;
-  const access = q.access_token as string | undefined;
-  const refresh = q.refresh_token as string | undefined;
-
-  if (!oauthError && !(access && refresh)) return;
-
-  const rest: Record<string, unknown> = { ...q };
-  delete rest.oauth_error;
-  delete rest.access_token;
-  delete rest.refresh_token;
-  delete rest.token_type;
-
-  if (oauthError) {
-    ElMessage.error(decodeURIComponent(oauthError));
-    await router.replace({ path: route.path, query: rest as LocationQuery });
-    return;
-  }
-
-  if (access && refresh) {
-    try {
-      Auth.setTokens(access, refresh, true);
-      userStore.setToken(access, refresh);
-      userStore.setLoginStatus(true);
-      ElNotification({
-        title: t("login.oauthNoticeTitle"),
-        message: t("login.oauthLoginSuccess"),
-        type: "success",
-      });
-      await router.replace(resolveRedirectTarget(rest as LocationQuery));
-      if (settingStore.showGuide) {
-        appStore.showGuide(true);
-      }
-    } catch (error) {
-      console.error("[Login] OAuth callback:", error);
-      ElMessage.error(t("login.oauthLoginFailed"));
-      await router.replace({ path: route.path, query: rest as LocationQuery });
-    }
-  }
 }
 
 const dragVerifyTextColor = computed(() =>
@@ -323,7 +160,6 @@ watch(locale, () => {
 
 watch(authPanel, (panel) => {
   if (panel !== "login") return;
-  if (loginFlowMode.value !== "account") return;
   getCaptcha();
   accountFormRef.value?.resetDragVerify?.();
   isPassing.value = false;
@@ -529,43 +365,40 @@ function resolveRedirectTarget(query: LocationQuery): RouteLocationRaw {
 
 let notificationInstance: ReturnType<typeof ElNotification> | null = null;
 
-const showVoteNotification = () => {
+const showProductNotice = () => {
   notificationInstance = ElNotification({
-    title: "⭐ FastapiAdmin 完全开源 · 期待您的 Star 支持 🙏",
-    message: `项目持续迭代中，若对您有所帮助，欢迎点亮 Star 支持！
-    <br/><a href="https://github.com/fastapiadmin/FastapiAdmin" target="_blank" style="color: var(--el-color-primary); text-decoration: none; font-weight: 500;">Github仓库 →</a>
-    <br/><a href="https://gitee.com/fastapiadmin/FastapiAdmin" target="_blank" style="color: var(--el-color-warning); text-decoration: none; font-weight: 500;">Gitee仓库 →</a>`,
-    type: "success",
+    title: "普华基础软件工具",
+    message:
+      "一站式 AUTOSAR 工具软件管理平台，统一管理工具与插件，持续升级版本并高效交付软件包。",
+    type: "info",
     position:
       panelAlign.value === "right" || panelAlign.value === "center"
         ? "bottom-left"
         : "bottom-right",
     duration: 0,
-    dangerouslyUseHTMLString: true,
   });
 };
 
-let voteTimer: ReturnType<typeof setTimeout> | null = null;
+let noticeTimer: ReturnType<typeof setTimeout> | null = null;
 
 onMounted(async () => {
   setupAccount("super");
   await configStore.getConfig(true);
-  await tryConsumeOAuthCallback();
   if (userStore.isLogin) {
     await router.replace(resolveRedirectTarget(route.query));
     return;
   }
   getCaptcha();
-  voteTimer = setTimeout(showVoteNotification, 500);
+  noticeTimer = setTimeout(showProductNotice, 500);
 });
 
 onActivated(() => {
-  if (authPanel.value !== "login" || loginFlowMode.value !== "account") return;
+  if (authPanel.value !== "login") return;
   getCaptcha();
 });
 
 onBeforeUnmount(() => {
-  if (voteTimer !== null) clearTimeout(voteTimer);
+  if (noticeTimer !== null) clearTimeout(noticeTimer);
   notificationInstance?.close();
   notificationInstance = null;
 });
@@ -573,7 +406,7 @@ onBeforeUnmount(() => {
 watch(
   () => route.fullPath,
   () => {
-    if (authPanel.value !== "login" || loginFlowMode.value !== "account") return;
+    if (authPanel.value !== "login") return;
     getCaptcha();
   }
 );

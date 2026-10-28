@@ -105,13 +105,14 @@ class SSEConnectionManager:
         回环到本进程的那份由订阅协程依据 _PROCESS_TOKEN 跳过，因此不会重复。
         """
         await self._dispatch_local(target, data)
-        if self._redis is None:
-            return
-        try:
-            message = json.dumps({"sender": _PROCESS_TOKEN, "target": target, "data": data}, ensure_ascii=False)
-            await self._redis.publish(self._channel_name, message)
-        except Exception as e:
-            logger.warning("{} 通道跨进程广播失败（本进程已尽力投递）: {}", self._channel, e)
+        # lqm rm 原 Redis 跨进程 publish 已注释，不是删除。当前只投递本进程连接。
+        # if self._redis is None:
+        #     return
+        # try:
+        #     message = json.dumps({"sender": _PROCESS_TOKEN, "target": target, "data": data}, ensure_ascii=False)
+        #     await self._redis.publish(self._channel_name, message)
+        # except Exception as e:
+        #     logger.warning("{} 通道跨进程广播失败（本进程已尽力投递）: {}", self._channel, e)
 
     async def _dispatch_local(self, target: dict[str, Any], data: Any) -> None:
         """把消息投给本进程命中 target（{"all": true} 或 {"users": [...]}）的连接。"""

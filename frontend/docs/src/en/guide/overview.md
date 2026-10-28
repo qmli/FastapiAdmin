@@ -27,7 +27,6 @@ FastapiAdmin/
 ├─ backend/               # Backend (FastAPI + Python)
 ├─ frontend/              # Frontend projects
 │   ├── web/              # Web frontend (Vue3 + Element Plus)
-│   ├── app/              # Mobile (UniApp)
 │   └── docs/             # Documentation site (VitePress)
 ├─ docker/                # Docker deployment config
 │   ├── backend/          # Backend Dockerfile
@@ -40,7 +39,7 @@ FastapiAdmin/
 └─ README.md              # Project docs
 ```
 
-> Detailed directory structures: [Frontend](./frontend), [Backend](./backend), [Mobile](./miniprogram), [Deployment](./deployment).
+> Detailed directory structures: [Frontend](./frontend), [Backend](./backend), [Deployment](./deployment).
 
 ## Core Highlights
 
@@ -52,7 +51,6 @@ FastapiAdmin/
 | 🔒 Security | JWT OAuth2, RBAC permission control |
 | 🚀 Deployment | Docker Compose one-click deployment |
 | 📖 Developer Friendly | Complete documentation + Chinese UI + visual toolchain |
-| 📱 Mobile Support | UniApp-based FastApp, multi-platform (H5, Mini Program, App) |
 | 🛠️ Code Generator | Built-in code generation tools |
 
 ## Technology Stack
@@ -65,7 +63,6 @@ FastapiAdmin/
 | Auth | PyJWT |
 | Frontend Framework | Vue3 / Vite / Pinia / TypeScript |
 | Web UI | Element Plus |
-| Mobile | UniApp / Wot Design Uni |
 | Database | MySQL / PostgreSQL / SQLite |
 | Cache | Redis |
 | Deployment | Docker / Nginx / Docker Compose |

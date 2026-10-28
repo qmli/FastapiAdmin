@@ -2,8 +2,8 @@
   <div class="fa-card h-82 p-5 mb-5 overflow-hidden max-lg:h-auto max-sm:mb-4">
     <div class="fa-card-header pr-0">
       <div class="title">
-        <h4>今日销售</h4>
-        <p>销售总结</p>
+        <h4>今日使用</h4>
+        <p>AUTOSAR 配置与生成</p>
       </div>
       <div
         class="flex items-center justify-center h-7.5 min-w-17 border border-g-300 rounded-lg text-g-500 cursor-pointer"
@@ -15,7 +15,7 @@
 
     <div class="mt-2">
       <ElRow :gutter="20">
-        <ElCol :span="6" :xs="24" v-for="item in salesData" :key="item.label">
+        <ElCol :span="6" :xs="24" v-for="item in usageData" :key="item.label">
           <div
             class="flex px-5 flex-col justify-center h-55 border border-g-300/85 rounded-xl max-lg:mb-4 max-sm:flex-row max-sm:justify-between max-sm:items-center max-sm:h-40"
           >
@@ -44,46 +44,38 @@
 </template>
 
 <script setup lang="ts">
-interface SalesDataItem {
+interface UsageDataItem {
   label: string;
   value: number;
   change: string;
   icon: string;
-  class: string;
 }
 
-/**
- * 今日销售数据统计
- * 包含销售额、订单量、产品销量和新客户数等关键指标
- */
-const salesData = ref<SalesDataItem[]>([
+/** 今日 AUTOSAR 工具功能使用 */
+const usageData = ref<UsageDataItem[]>([
   {
-    label: "总销售额",
-    value: 999,
-    change: "+10%",
-    icon: "ri:bar-chart-box-ai-line",
-    class: "bg-theme",
-  },
-  {
-    label: "总订单量",
-    value: 300,
-    change: "+15%",
-    icon: "ri:bar-chart-grouped-line",
-    class: "bg-warning",
-  },
-  {
-    label: "产品销售量",
-    value: 56,
-    change: "-5%",
-    icon: "ri:bar-chart-2-line",
-    class: "bg-error",
-  },
-  {
-    label: "新客户数",
-    value: 68,
+    label: "BSW 配置",
+    value: 86,
     change: "+8%",
-    icon: "ri:user-add-line",
-    class: "bg-success",
+    icon: "ri:settings-3-line",
+  },
+  {
+    label: "SWC 设计",
+    value: 42,
+    change: "+6%",
+    icon: "ri:node-tree",
+  },
+  {
+    label: "RTE 生成",
+    value: 24,
+    change: "+11%",
+    icon: "ri:code-s-slash-line",
+  },
+  {
+    label: "配置校验",
+    value: 31,
+    change: "-4%",
+    icon: "ri:checkbox-circle-line",
   },
 ]);
 </script>

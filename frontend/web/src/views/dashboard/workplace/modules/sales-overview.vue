@@ -2,10 +2,10 @@
   <div class="fa-card h-105 p-5">
     <div class="fa-card-header">
       <div class="title">
-        <h4>访问量</h4>
+        <h4>构建趋势</h4>
         <p>
           今年增长
-          <span class="text-success">+15%</span>
+          <span class="text-success">+8.6%</span>
         </p>
       </div>
     </div>
@@ -21,10 +21,9 @@
 
 <script setup lang="ts">
 /**
- * 全年访问量数据
- * 记录每月的访问量统计
+ * 全年构建次数
  */
-const data = [50, 25, 40, 20, 70, 35, 65, 30, 35, 20, 40, 44];
+const data = [62, 58, 70, 66, 74, 72, 80, 68, 90, 86, 78, 94];
 
 /**
  * X 轴月份标签

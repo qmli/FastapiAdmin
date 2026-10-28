@@ -2,8 +2,8 @@
   <div class="fa-card p-5 h-112">
     <div class="fa-card-header">
       <div class="title">
-        <h4>热销商品</h4>
-        <p>本周销售排行</p>
+        <h4>高频构建</h4>
+        <p>本周执行最多</p>
       </div>
     </div>
     <FaLineChart
@@ -27,7 +27,7 @@
           <span class="text-sm text-g-600">{{ item.subtitle }}</span>
         </div>
         <div class="ml-auto px-3 py-1.5 text-sm text-center rounded" :class="item.valueBgClass">
-          <span>+{{ item.value }}</span>
+          <span>{{ item.value }}</span>
         </div>
       </div>
     </div>
@@ -44,32 +44,29 @@ interface WeeklyItem {
   valueBgClass: string;
 }
 
-/**
- * 本周热销商品列表
- * 展示销量排名前三的商品信息
- */
+/** 本周执行次数最多的构建对象 */
 const weeklyList: WeeklyItem[] = [
   {
-    icon: "ri:money-cny-circle-line",
-    title: "智能手表Pro",
-    subtitle: "电子产品",
-    value: "1,286件",
+    icon: "ri:code-s-slash-line",
+    title: "基础软件 BSW",
+    subtitle: "linux-aarch64",
+    value: "42 次",
     iconBgClass: "bg-theme/12 text-theme",
     valueBgClass: "bg-theme/12 text-theme",
   },
   {
-    icon: "ri:money-cny-circle-line",
-    title: "时尚连衣裙",
-    subtitle: "女装服饰",
-    value: "892件",
+    icon: "ri:archive-line",
+    title: "工具链安装包",
+    subtitle: "x86_64",
+    value: "28 次",
     iconBgClass: "bg-success/12 text-success",
     valueBgClass: "bg-success/12 text-success",
   },
   {
-    icon: "ri:money-cny-circle-line",
-    title: "厨房小家电",
-    subtitle: "家居用品",
-    value: "756件",
+    icon: "ri:cpu-line",
+    title: "诊断协议栈",
+    subtitle: "linux-arm",
+    value: "19 次",
     iconBgClass: "bg-error/12 text-error",
     valueBgClass: "bg-error/12 text-error",
   },

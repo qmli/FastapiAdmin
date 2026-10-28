@@ -134,24 +134,6 @@ server {
 }
 ```
 
-## Mobile Deployment
-
-### H5
-
-```bash
-cd FastapiAdmin/frontend/app
-pnpm install && pnpm run build:h5
-# Deploy dist/build/h5 to Nginx
-```
-
-### Mini Program
-
-```bash
-pnpm run build:mp-weixin
-# Import dist/build/mp-weixin into WeChat DevTools
-# Upload and submit for review
-```
-
 ## Common Deployment Issues
 
 | Issue | Solution |

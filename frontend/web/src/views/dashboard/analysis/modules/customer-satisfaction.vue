@@ -2,7 +2,8 @@
   <div class="fa-card h-100 p-5 mb-5 max-sm:mb-4 flex flex-col">
     <div class="fa-card-header">
       <div class="title">
-        <h4>客户满意度</h4>
+        <h4>功能完成率</h4>
+        <p>配置校验通过的比例</p>
       </div>
     </div>
     <FaLineChart
@@ -25,25 +26,18 @@ const AREA_STYLE_CONFIG = {
   endOpacity: 0,
 } as const;
 
-/**
- * X 轴数据配置
- * 表示一周的天数（周一到周日）
- */
-const xAxisData = ["1", "2", "3", "4", "5", "6", "7"];
+const xAxisData = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 
-/**
- * 客户满意度图表数据
- * 对比上个月和本月的满意度趋势
- */
+/** 功能完成率，对比上月与本月 */
 const chartData = computed<LineDataItem[]>(() => [
   {
-    name: "上个月",
-    data: [65, 72, 68, 75, 82, 78, 85],
+    name: "上月",
+    data: [82, 84, 83, 85, 86, 84, 85],
     areaStyle: AREA_STYLE_CONFIG,
   },
   {
     name: "本月",
-    data: [78, 85, 82, 88, 92, 89, 95],
+    data: [86, 87, 88, 89, 90, 88, 89],
     areaStyle: AREA_STYLE_CONFIG,
   },
 ]);

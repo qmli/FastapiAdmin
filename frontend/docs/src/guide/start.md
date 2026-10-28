@@ -2,14 +2,13 @@
 layout: doc
 outline: "deep"
 title: 快速开始
-description: "15-30 分钟跑通一个可演示的 MVP:环境准备、代码拉取、Docker Compose 一键启动、初始化数据、本地访问 Web 端与 App 端,常见问题排查。"
+description: "15-30 分钟跑通一个可演示的 MVP:环境准备、代码拉取、Docker Compose 一键启动、初始化数据、本地访问 Web 端,常见问题排查。"
 ---
 
 ## 🍪 演示环境
 
 - 官网：[https://service.fastapiadmin.com](https://service.fastapiadmin.com)
 - Web 端：[https://service.fastapiadmin.com/web](https://service.fastapiadmin.com/web)
-- 移动端：[https://service.fastapiadmin.com/app](https://service.fastapiadmin.com/app)
 - 演示账号：`admin` / `123456`（**仅限官方演示站使用，请勿用于生产环境**；首次部署后请立即修改默认密码）
 
 ## 环境准备
@@ -21,8 +20,6 @@ description: "15-30 分钟跑通一个可演示的 MVP:环境准备、代码拉�
 | 前端 | Node.js | ≥ 20.0 |
 | 前端 | pnpm | ≥ 9.0 |
 | Web UI | Element Plus | 2.10+ |
-| 移动端 | UniApp | 3.0+ |
-| App UI | Wot Design Uni | 1.9+ |
 | 数据库 | MySQL | 8.0+ / PostgreSQL 13+ / SQLite |
 | 中间件 | Redis | 7.0+ |
 
@@ -79,11 +76,6 @@ cd FastapiAdmin/frontend/web
 pnpm install
 pnpm run dev
 
-# 移动端 (UniApp)
-cd FastapiAdmin/frontend/app
-pnpm install
-pnpm run dev:h5
-
 # 文档网站 (VitePress)
 cd FastapiAdmin/frontend/docs
 pnpm install
@@ -95,7 +87,6 @@ pnpm run dev
 | 服务 | 地址 |
 |------|------|
 | Web 前端 | `http://127.0.0.1:5173` |
-| 移动端 H5 | `http://127.0.0.1:8080` |
 | 文档网站 | `http://127.0.0.1:5174` |
 | 后端 API | `http://127.0.0.1:8001` |
 | Swagger | `http://127.0.0.1:8001/docs` |

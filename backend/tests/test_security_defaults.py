@@ -457,13 +457,6 @@ def test_localhost_hosts_are_configurable() -> None:
     assert restricted.ALLOWED_HOSTS == ["service.fastapiadmin.com", "*.fastapiadmin.com"]
 
 
-def test_oauth_allowed_hosts_default_is_not_wildcard() -> None:
-    """OAuth 回调域名白名单默认不再是 "*"（Host 注入不再自动放行）。"""
-    defaults = Settings(_env_file=None)
-    assert "*" not in defaults.OAUTH_ALLOWED_HOSTS
-    assert "service.fastapiadmin.com" in defaults.OAUTH_ALLOWED_HOSTS
-
-
 def test_health_exposes_scheduler_and_cors_state() -> None:
     """健康检查暴露「代码执行开关 / CORS 是否已配置」，让升级后的行为变更可观测。"""
     from app.modules.monitor.health.schema import ServiceInfoOut

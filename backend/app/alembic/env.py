@@ -21,7 +21,8 @@ ImportUtil.find_models(MappedBase)
 alembic_config = context.config
 
 target_metadata = MappedBase.metadata
-alembic_config.set_main_option("sqlalchemy.url", settings.ASYNC_DB_URI)
+# 密码经 URL 编码后含 %（如 @ → %40）。ConfigParser 把 % 当插值，需写成 %%。
+alembic_config.set_main_option("sqlalchemy.url", settings.ASYNC_DB_URI.replace("%", "%%"))
 
 
 def run_migrations_offline() -> None:

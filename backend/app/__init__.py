@@ -3,10 +3,10 @@
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import asynccontextmanager
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import path_conf
@@ -32,11 +32,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
     await init_agno_tables()
     logger.info("✅ AI 会话表 初始化完成")
     await redis_connect(app, status=True)
-    logger.info("✅ Redis 连接初始化完成")
+    # lqm rm 原日志「Redis 连接初始化完成」已注释，不是删除。当前不连接 Redis。
+    # lqm rm logger.info("✅ Redis 连接初始化完成")
+    logger.info("✅ Redis 已禁用，会话、缓存与锁直接读写数据库")
     await ParamsService.init_cache(redis=app.state.redis)
-    logger.info("✅ Redis系统参数 初始化完成")
+    logger.info("✅ 系统参数缓存 初始化完成")
     await DictDataService.init_cache(redis=app.state.redis)
-    logger.info("✅ Redis数据字典 初始化完成")
+    logger.info("✅ 数据字典缓存 初始化完成")
     await SchedulerUtil.init_scheduler(redis=app.state.redis)
     logger.info("✅ 定时任务调度器 初始化完成")
 
@@ -56,7 +58,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
         await SchedulerUtil.shutdown(wait=True)
         logger.info("✅ 定时任务调度器已关闭")
         await redis_connect(app, status=False)
-        logger.info("✅ redis 连接已关闭")
+        # lqm rm logger.info("✅ redis 连接已关闭")  # 原关闭日志已注释，不是删除。当前未建立 Redis 连接。
         await async_engine.dispose()
         logger.info(f"✅ {settings.DATABASE_TYPE} 连接已关闭")
     except Exception as e:
@@ -123,10 +125,31 @@ def register_docs(app: FastAPI) -> None:
 
 
 def register_frontend(app: FastAPI) -> None:
-    """注册前端静态文件路由。"""
-    if path_conf.FRONTEND_DIST_DIR.exists():
-        # 如果你的前端文件是稍后创建的（例如在创建应用对象之后通过单独的构建步骤生成），请设置 check_dir=False
-        app.frontend("/", directory=str(path_conf.FRONTEND_DIST_DIR), check_dir=False)
+    """把构建产物挂到 /web。
+
+    ``root_path`` 为 ``/api/v1`` 时，浏览器访问 ``/api/v1/web`` 也会落到这里。
+    产物目录不存在时跳过，避免开发环境未构建就启动失败。
+    """
+    dist = path_conf.FRONTEND_DIST_DIR.resolve()
+    index_file = dist / "index.html"
+    if not index_file.is_file():
+        logger.warning(f"前端未构建，{settings.WEB_URL} 不可用：缺少 {index_file}")
+        return
+
+    web = settings.WEB_URL.rstrip("/") or "/web"
+
+    @app.get(web, include_in_schema=False)
+    @app.get(f"{web}/", include_in_schema=False)
+    async def frontend_index() -> FileResponse:
+        return FileResponse(index_file)
+
+    @app.get(f"{web}/{{resource_path:path}}", include_in_schema=False)
+    async def frontend_asset(resource_path: str) -> FileResponse:
+        # root_path 会让 StaticFiles 把 /web 资源解析到错误目录，这里按产物相对路径直接返回。
+        target = (dist / resource_path).resolve()
+        if not target.is_relative_to(dist) or not target.is_file():
+            raise HTTPException(status_code=404)
+        return FileResponse(target)
 
 
 def create_app() -> FastAPI:

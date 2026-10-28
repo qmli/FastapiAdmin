@@ -1,55 +1,64 @@
 from typing import Any
 
 from fastapi import FastAPI
-from redis import exceptions
+from redis import exceptions  # noqa: F401  # lqm rm 下方连接代码已注释，保留导入，不是删除
 from redis.asyncio import Redis
 
-from app.config.setting import settings
+from app.config.setting import settings  # noqa: F401  # lqm rm 下方注释中的 Redis 连接仍引用它，保留导入，不是删除
+from app.core import db_cache
 from app.core.logger import logger
+
+# lqm rm Redis 客户端调用已整段注释，不是强制删除。当前会话/缓存/锁直接读写数据库表 sys_cache。
+# lqm rm 恢复：取消本文件中「lqm rm 原 Redis」注释，并把 REDIS_ENABLE 改回 true（同时恢复 docker-compose 里的 Redis 服务注释）。
 
 
 async def redis_connect(app: FastAPI, status: bool) -> Redis | None:
-    """创建或关闭Redis连接。
+    """创建或关闭 Redis 连接。
 
-    连接失败时直接抛出异常（fail-fast）：Redis 承载会话/参数缓存/调度 jobstore，
-    静默降级会导致应用带病运行、请求期随机 500，宁可启动即失败。
+    连接实现已注释（lqm rm），不是删除。当前不访问 Redis，调用方改走数据库键值表。
 
     参数:
     - app (FastAPI): FastAPI应用实例。
     - status (bool): 连接状态,True为创建连接,False为关闭连接。
 
     返回:
-    - Redis | None: Redis连接实例（status=False 时返回 None）。
+    - Redis | None: 当前固定返回 None。
     """
     if status:
-        try:
-            rd = await Redis.from_url(
-                url=settings.REDIS_URI,
-                encoding="utf-8",
-                decode_responses=True,
-                health_check_interval=settings.REDIS_HEALTH_CHECK_INTERVAL,
-                max_connections=settings.POOL_SIZE,
-                socket_timeout=settings.POOL_TIMEOUT,
-            )
-            app.state.redis = rd
-            if await rd.ping():  # pyright: ignore[reportGeneralTypeIssues]
-                return rd
-            msg = "Redis ping 返回 False，连接不可用"
-            raise exceptions.ConnectionError(msg)
-        except exceptions.RedisError as e:
-            logger.error(f"❌ Redis 连接失败: {e}")
-            raise
-    else:
-        await app.state.redis.close()
-        logger.info("✅️ Redis连接已关闭")
+        app.state.redis = None
+    return None
+    # lqm rm 原 Redis 连接（已注释，不是删除）。恢复时取消本段注释，并删除上面的提前 return。
+    # if status:
+    #     try:
+    #         rd = await Redis.from_url(
+    #             url=settings.REDIS_URI,
+    #             encoding="utf-8",
+    #             decode_responses=True,
+    #             health_check_interval=settings.REDIS_HEALTH_CHECK_INTERVAL,
+    #             max_connections=settings.POOL_SIZE,
+    #             socket_timeout=settings.POOL_TIMEOUT,
+    #         )
+    #         app.state.redis = rd
+    #         if await rd.ping():
+    #             return rd
+    #         msg = "Redis ping 返回 False，连接不可用"
+    #         raise exceptions.ConnectionError(msg)
+    #     except exceptions.RedisError as e:
+    #         logger.error(f"❌ Redis 连接失败: {e}")
+    #         raise
+    # else:
+    #     await app.state.redis.close()
+    #     logger.info("✅️ Redis连接已关闭")
 
 
 class RedisCURD:
-    """缓存工具类"""
+    """缓存工具类。Redis 读写已注释（lqm rm），不是删除；当前方法全部直接读写数据库。"""
 
-    def __init__(self, redis: Redis) -> None:
-        """初始化"""
-        self.redis = redis
+    redis: Redis
+
+    def __init__(self, redis: Redis | None) -> None:
+        """初始化。Redis 关闭时 ``redis`` 可以为空，读写走数据库。"""
+        self.redis = redis  # type: ignore[assignment]
 
     async def mget(self, keys: list) -> list:
         """批量获取缓存
@@ -61,8 +70,10 @@ class RedisCURD:
         - list: 返回缓存值列表,如果获取失败则返回空列表
         """
         try:
-            data = await self.redis.mget(*[str(key) for key in keys])
-            return data
+            # lqm rm 原 Redis：data = await self.redis.mget(...) 已注释，不是删除。
+            return await db_cache.cache_mget(keys)
+            # data = await self.redis.mget(*[str(key) for key in keys])
+            # return data
         except Exception as e:
             logger.error(f"批量获取缓存失败: {e!s}")
             return []
@@ -78,10 +89,12 @@ class RedisCURD:
         - list: 返回匹配的缓存键名列表,如果获取失败则返回空列表
         """
         try:
-            keys: list = []
-            async for key in self.redis.scan_iter(match=pattern, count=count):
-                keys.append(key)
-            return keys
+            # lqm rm 原 Redis：scan_iter 已注释，不是删除。
+            return await db_cache.cache_keys(pattern)
+            # keys: list = []
+            # async for key in self.redis.scan_iter(match=pattern, count=count):
+            #     keys.append(key)
+            # return keys
         except Exception as e:
             logger.error(f"扫描缓存键名失败: {e!s}")
             return []
@@ -96,8 +109,10 @@ class RedisCURD:
         - list: 返回匹配的缓存键名列表,如果获取失败则返回空列表
         """
         try:
-            keys = await self.redis.keys(f"{pattern}")
-            return keys
+            # lqm rm 原 Redis：keys 命令已注释，不是删除。
+            return await db_cache.cache_keys(pattern)
+            # keys = await self.redis.keys(f"{pattern}")
+            # return keys
         except Exception as e:
             logger.error(f"获取缓存键名失败: {e!s}")
             return []
@@ -112,13 +127,12 @@ class RedisCURD:
         - Any: 返回缓存值,如果缓存不存在则返回None
         """
         try:
-            data = await self.redis.get(f"{key}")
-
-            if data is None:
-                return None
-
-            return data
-
+            # lqm rm 原 Redis：await self.redis.get 已注释，不是删除。
+            return await db_cache.cache_get(key)
+            # data = await self.redis.get(f"{key}")
+            # if data is None:
+            #     return None
+            # return data
         except Exception as e:
             logger.error(f"获取缓存失败: {e!s}")
             return None
@@ -135,11 +149,13 @@ class RedisCURD:
         - bool: 如果设置缓存成功则返回True,否则返回False
         """
         try:
-            if expire:
-                await self.redis.set(name=key, value=value, ex=expire)
-            else:
-                await self.redis.set(name=key, value=value)
-            return True
+            # lqm rm 原 Redis：await self.redis.set 已注释，不是删除。
+            return await db_cache.cache_set(key, value, expire)
+            # if expire:
+            #     await self.redis.set(name=key, value=value, ex=expire)
+            # else:
+            #     await self.redis.set(name=key, value=value)
+            # return True
         except Exception as e:
             logger.error(f"设置缓存失败: {e!s}")
             return False
@@ -160,15 +176,17 @@ class RedisCURD:
         - bool: 写入成功返回True，键已变化/不存在或出错返回False
         """
         try:
-            script = """
-            if redis.call('get', KEYS[1]) ~= ARGV[1] then
-                return 0
-            end
-            redis.call('set', KEYS[1], ARGV[2], 'EX', tonumber(ARGV[3]))
-            return 1
-            """
-            result = await self.redis.eval(script, 1, key, expected, value, expire)  # pyright: ignore[reportGeneralTypeIssues]
-            return result == 1
+            # lqm rm 原 Redis Lua 原子替换已注释，不是删除。
+            return await db_cache.cache_compare_and_set(key, expected, value, expire)
+            # script = """
+            # if redis.call('get', KEYS[1]) ~= ARGV[1] then
+            #     return 0
+            # end
+            # redis.call('set', KEYS[1], ARGV[2], 'EX', tonumber(ARGV[3]))
+            # return 1
+            # """
+            # result = await self.redis.eval(script, 1, key, expected, value, expire)
+            # return result == 1
         except Exception as e:
             logger.error(f"原子更新缓存失败: {key}: {e!s}")
             return False
@@ -189,14 +207,16 @@ class RedisCURD:
 
             # 如果没有提供value，生成唯一的UUID
             lock_value = value or str(uuid.uuid4())
-            # 使用setnx命令实现原子性锁获取
-            result = await self.redis.set(
-                name=key,
-                value=lock_value,
-                ex=expire,
-                nx=True,  # 只有当键不存在时才设置
-            )
-            return (result is not None, lock_value)
+            # lqm rm 原 Redis SET NX 已注释，不是删除。
+            acquired = await db_cache.cache_lock(key, expire, lock_value)
+            return (acquired, lock_value if acquired else "")
+            # result = await self.redis.set(
+            #     name=key,
+            #     value=lock_value,
+            #     ex=expire,
+            #     nx=True,  # 只有当键不存在时才设置
+            # )
+            # return (result is not None, lock_value)
         except Exception as e:
             logger.error(f"获取分布式锁失败: {e!s}")
             return (False, "")
@@ -212,16 +232,17 @@ class RedisCURD:
         - bool: 如果释放锁成功则返回True,否则返回False
         """
         try:
-            # 使用Lua脚本确保原子性验证和删除
-            script = """
-            if redis.call('get', KEYS[1]) == ARGV[1] then
-                return redis.call('del', KEYS[1])
-            else
-                return 0
-            end
-            """
-            result = await self.redis.eval(script, 1, key, value)  # pyright: ignore[reportGeneralTypeIssues]
-            return result == 1
+            # lqm rm 原 Redis Lua 解锁已注释，不是删除。
+            return await db_cache.cache_unlock(key, value)
+            # script = """
+            # if redis.call('get', KEYS[1]) == ARGV[1] then
+            #     return redis.call('del', KEYS[1])
+            # else
+            #     return 0
+            # end
+            # """
+            # result = await self.redis.eval(script, 1, key, value)
+            # return result == 1
         except Exception as e:
             logger.error(f"释放分布式锁失败: {e!s}")
             return False
@@ -236,8 +257,10 @@ class RedisCURD:
         - bool: 如果释放锁成功则返回True,否则返回False
         """
         try:
-            await self.redis.delete(key)
-            return True
+            # lqm rm 原 Redis：await self.redis.delete(key) 已注释，不是删除。
+            return await db_cache.cache_delete(key)
+            # await self.redis.delete(key)
+            # return True
         except Exception as e:
             logger.error(f"释放分布式锁失败: {e!s}")
             return False
@@ -252,8 +275,10 @@ class RedisCURD:
         - bool: 如果删除缓存成功则返回True,否则返回False
         """
         try:
-            await self.redis.delete(*keys)
-            return True
+            # lqm rm 原 Redis：await self.redis.delete(*keys) 已注释，不是删除。
+            return await db_cache.cache_delete(*keys)
+            # await self.redis.delete(*keys)
+            # return True
         except Exception as e:
             logger.error(f"删除缓存失败: {e!s}")
             return False
@@ -268,10 +293,15 @@ class RedisCURD:
         - bool: 如果清空缓存成功则返回True,否则返回False
         """
         try:
-            keys = await self.redis.keys(f"{pattern}")
+            # lqm rm 原 Redis：keys + delete 已注释，不是删除。
+            keys = await db_cache.cache_keys(pattern)
             if keys:
-                await self.redis.delete(*keys)
+                await db_cache.cache_delete(*keys)
             return True
+            # keys = await self.redis.keys(f"{pattern}")
+            # if keys:
+            #     await self.redis.delete(*keys)
+            # return True
         except Exception as e:
             logger.error(f"清空缓存失败: {e!s}")
             return False
@@ -286,7 +316,9 @@ class RedisCURD:
         - bool: 如果缓存存在则返回True,否则返回False
         """
         try:
-            return await self.redis.exists(f"{key}")
+            # lqm rm 原 Redis：await self.redis.exists 已注释，不是删除。
+            return await db_cache.cache_exists(key)
+            # return await self.redis.exists(f"{key}")
         except Exception as e:
             logger.error(f"判断缓存是否存在失败: {e!s}")
             return False
@@ -301,7 +333,9 @@ class RedisCURD:
         - int: 返回缓存过期时间,单位为秒,如果缓存没有设置过期时间则返回-1
         """
         try:
-            return await self.redis.ttl(f"{key}")
+            # lqm rm 原 Redis：await self.redis.ttl 已注释，不是删除。
+            return await db_cache.cache_ttl(key)
+            # return await self.redis.ttl(f"{key}")
         except Exception as e:
             logger.error(f"获取缓存过期时间失败: {e!s}")
             return -1
@@ -318,16 +352,17 @@ class RedisCURD:
         - bool: 如果续约锁成功则返回True,否则返回False
         """
         try:
-            # 使用Lua脚本确保原子性验证和续约
-            script = """
-            if redis.call('get', KEYS[1]) == ARGV[1] then
-                return redis.call('expire', KEYS[1], ARGV[2])
-            else
-                return 0
-            end
-            """
-            result = await self.redis.eval(script, 1, key, value, str(expire))  # pyright: ignore[reportGeneralTypeIssues]
-            return result == 1
+            # lqm rm 原 Redis Lua 续约已注释，不是删除。
+            return await db_cache.cache_renew_lock(key, expire, value)
+            # script = """
+            # if redis.call('get', KEYS[1]) == ARGV[1] then
+            #     return redis.call('expire', KEYS[1], ARGV[2])
+            # else:
+            #     return 0
+            # end
+            # """
+            # result = await self.redis.eval(script, 1, key, value, str(expire))
+            # return result == 1
         except Exception as e:
             logger.error(f"续约分布式锁失败: {e!s}")
             return False
@@ -343,7 +378,9 @@ class RedisCURD:
         - bool: 如果设置缓存过期时间成功则返回True,否则返回False
         """
         try:
-            return bool(await self.redis.expire(name=key, time=expire))
+            # lqm rm 原 Redis：await self.redis.expire 已注释，不是删除。
+            return await db_cache.cache_expire(key, expire)
+            # return bool(await self.redis.expire(name=key, time=expire))
         except Exception as e:
             logger.error(f"设置缓存过期时间失败: {e!s}")
             return False
@@ -358,11 +395,16 @@ class RedisCURD:
         - int: 实际删除的键数量
         """
         try:
-            count = 0
-            async for key in self.redis.scan_iter(match=pattern, count=100):
-                if await self.redis.delete(key):
-                    count += 1
-            return count
+            # lqm rm 原 Redis：scan_iter + delete 已注释，不是删除。
+            keys = await db_cache.cache_keys(pattern)
+            if keys:
+                await db_cache.cache_delete(*keys)
+            return len(keys)
+            # count = 0
+            # async for key in self.redis.scan_iter(match=pattern, count=100):
+            #     if await self.redis.delete(key):
+            #         count += 1
+            # return count
         except Exception as e:
             logger.error(f"按模式删除缓存失败: pattern={pattern}, err={e!s}")
             return 0
@@ -374,7 +416,9 @@ class RedisCURD:
         - dict: 返回缓存信息字典,如果获取失败则返回空字典
         """
         try:
-            return await self.redis.info()
+            # lqm rm 原 Redis：await self.redis.info() 已注释，不是删除。
+            return await db_cache.cache_info()
+            # return await self.redis.info()
         except Exception as e:
             logger.error(f"获取缓存信息失败: {e!s}")
             return {}
@@ -386,7 +430,9 @@ class RedisCURD:
         - int: 返回数据库大小,如果获取失败则返回0
         """
         try:
-            return await self.redis.dbsize()
+            # lqm rm 原 Redis：await self.redis.dbsize() 已注释，不是删除。
+            return await db_cache.cache_db_size()
+            # return await self.redis.dbsize()
         except Exception as e:
             logger.error(f"获取数据库大小失败: {e!s}")
             return 0
@@ -398,7 +444,9 @@ class RedisCURD:
         - dict: 返回命令统计信息字典,如果获取失败则返回空字典
         """
         try:
-            return await self.redis.info("commandstats")
+            # lqm rm 原 Redis：await self.redis.info("commandstats") 已注释，不是删除。数据库模式无命令统计。
+            return {}
+            # return await self.redis.info("commandstats")
         except Exception as e:
             logger.error(f"获取命令统计信息失败: {e!s}")
             return {}
@@ -415,8 +463,10 @@ class RedisCURD:
         - bool: 如果设置哈希缓存成功则返回True,否则返回False
         """
         try:
-            await self.redis.hset(name=name, key=key, value=value)  # type: ignore[arg-type]
-            return True
+            # lqm rm 原 Redis：await self.redis.hset 已注释，不是删除。
+            return await db_cache.cache_hash_set(name, key, value)
+            # await self.redis.hset(name=name, key=key, value=value)
+            # return True
         except Exception as e:
             logger.error(f"设置哈希缓存失败: {e!s}")
             return False
@@ -432,8 +482,10 @@ class RedisCURD:
         - Awaitable[list[Any]] | list[Any]: 返回哈希缓存值列表,如果获取失败则返回空列表
         """
         try:
-            data = await self.redis.hmget(name=name, keys=keys)  # type: ignore[arg-type]
-            return data
+            # lqm rm 原 Redis：await self.redis.hmget 已注释，不是删除。
+            return await db_cache.cache_hash_get(name, keys)
+            # data = await self.redis.hmget(name=name, keys=keys)
+            # return data
         except Exception as e:
             logger.error(f"获取哈希缓存失败: {e!s}")
             return []
@@ -449,7 +501,9 @@ class RedisCURD:
         - int: 订阅者数量
         """
         try:
-            return await self.redis.publish(channel, message)
+            # lqm rm 原 Redis：await self.redis.publish 已注释，不是删除。单进程推送不依赖它。
+            return 0
+            # return await self.redis.publish(channel, message)
         except Exception as e:
             logger.error(f"Redis 发布消息失败: channel={channel}, err={e!s}")
             return 0

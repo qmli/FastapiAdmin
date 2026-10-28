@@ -2,16 +2,16 @@
   <div class="fa-card h-53 p-5 pt-3.5">
     <div class="fa-card-header">
       <div class="title">
-        <h4 class="text-2xl font-medium">205,216</h4>
-        <p>这个月增长</p>
+        <h4 class="text-2xl font-medium">412</h4>
+        <p>本月构建</p>
       </div>
     </div>
 
     <FaRingChart
       :data="[
-        { value: 30, name: '已完成' },
-        { value: 25, name: '处理中' },
-        { value: 45, name: '待发货' },
+        { value: 368, name: '成功' },
+        { value: 28, name: '失败' },
+        { value: 16, name: '排队' },
       ]"
       :color="['#4C87F3', '#93F1B4', '#8BD8FC']"
       :radius="['56%', '76%']"

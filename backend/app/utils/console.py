@@ -70,7 +70,7 @@ def console_start(
     status_grid.add_row(
         database_type,  _status_text(database_ready),
         sep,
-        "Redis", _status_text(redis_ready),
+        "Redis" if settings.REDIS_ENABLE else "直连库", _status_text(redis_ready),
         sep,
         "调度器", _status_text(scheduler_ready),
     )

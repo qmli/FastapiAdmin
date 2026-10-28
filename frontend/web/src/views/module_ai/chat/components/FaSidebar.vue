@@ -3,7 +3,7 @@
     <div class="sidebar-header">
       <div class="logo-section">
         <ElIcon class="logo-icon" :size="28"><ChatDotRound /></ElIcon>
-        <span v-if="!isCollapsed" class="project-name">FA智能助手</span>
+        <span v-if="!isCollapsed" class="project-name">iSoft智能助手</span>
       </div>
     </div>
 

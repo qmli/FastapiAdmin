@@ -2,14 +2,15 @@
   <div class="fa-card h-100 p-5 mb-5 max-sm:mb-4">
     <div class="fa-card-header">
       <div class="title">
-        <h4>目标与实际</h4>
+        <h4>生成目标</h4>
+        <p>本周代码生成与计划对比</p>
       </div>
     </div>
 
     <FaBarChart
       class="p-5"
       height="12rem"
-      :data="revenueData"
+      :data="usageData"
       :xAxisData="weekDays"
       :showAxisLine="false"
       barWidth="28%"
@@ -37,45 +38,36 @@
 </template>
 
 <script setup lang="ts">
-interface RevenueDataItem {
+interface UsageSeries {
   name: string;
   data: number[];
 }
 
-/**
- * 一周的日期标签
- */
 const weekDays = ref(["周一", "周二", "周三", "周四", "周五", "周六", "周日"]);
 
-/**
- * 目标与实际销售数据
- * 展示一周内的线上销售情况
- */
-const revenueData = ref<RevenueDataItem[]>([
+/** 本周每日实际功能调用 */
+const usageData = ref<UsageSeries[]>([
   {
-    name: "线上销售",
-    data: [12, 13, 5, 15, 10, 15, 18],
+    name: "代码生成",
+    data: [48, 52, 36, 61, 44, 22, 18],
   },
 ]);
 
-/**
- * 统计项数据
- */
 const totalItems = [
   {
-    icon: "ri:shopping-bag-line",
+    icon: "ri:code-s-slash-line",
     iconClass: "text-theme bg-theme/12",
-    label: "实际销售额",
-    subLabel: "全球",
-    value: "8,823",
+    label: "实际生成",
+    subLabel: "本周",
+    value: "281",
     valueClass: "text-theme",
   },
   {
-    icon: "ri:money-dollar-circle-line",
+    icon: "ri:flag-line",
     iconClass: "text-theme bg-theme/12",
-    label: "目标销售额",
-    subLabel: "商业",
-    value: "12,122",
+    label: "计划生成",
+    subLabel: "本周",
+    value: "320",
     valueClass: "text-theme",
   },
 ];

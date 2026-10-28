@@ -13,7 +13,6 @@ If you're evaluating a rapid development platform for admin/dashboard systems, h
 |-----------|-------------|---------------------------|------------------------|
 | **Backend** | FastAPI async, Pydantic type-safe | Django/Flask sync-first | None, build yourself |
 | **Frontend** | Vue3 + TypeScript + Element Plus, ready-to-use | Jinja templates | Vue3 + Element Plus |
-| **Mobile** | UniApp multi-platform (H5/Mini Program/App) | None | None |
 | **Code Generator** | Built-in, DB table → full CRUD | Extra plugins needed | None |
 | **Deployment** | Docker Compose one-click, Nginx + SSL included | Manual setup | Manual setup |
 | **Architecture** | Vertical slice by domain, auto plugin registration | Layer-first | Layer-first |
@@ -81,14 +80,12 @@ Features FastApiAdmin provides that raw frameworks or frontend-only templates **
 | Operation log auditing | ✅ | ✅ | ❌ |
 | Scheduled task management | ✅ | ❌ | ❌ |
 | WebSocket real-time push | ✅ | ❌ | ❌ |
-| Mobile (H5/Mini Program) | ✅ | ❌ | ❌ |
 
 ## Summary
 
 FastApiAdmin is the **best fit** if you need:
 - ✅ Python stack, want FastAPI's async performance
 - ✅ Vue3 frontend team, need production-ready admin template
-- ✅ Mobile support (H5/Mini Program)
 - ✅ Don't want to build RBAC, logging, monitoring from scratch
 - ✅ Multi-developer, need low coupling between modules
 

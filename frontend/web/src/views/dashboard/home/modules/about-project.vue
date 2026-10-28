@@ -1,44 +1,35 @@
 <template>
-  <div class="fa-card p-5 flex justify-between h-100">
-    <div>
-      <h2 class="text-2xl font-medium">关于项目</h2>
-      <p class="text-g-700 mt-1">{{ systemName }} 是一款兼具设计美学与高效开发的后台系统</p>
-      <p class="text-g-700 mt-1">使用了 Vue3、TypeScript、Vite、Element Plus 等前沿技术</p>
+  <div class="fa-card p-5 h-100 flex flex-col">
+    <h2 class="text-2xl font-medium">工具能力</h2>
+    <p class="text-g-700 mt-1">
+      {{ systemName }} 管理基础软件的编译、打包、构建与发布，并在同一工作台查看工具链状态、构建结果和制品版本。
+    </p>
 
-      <div class="grid grid-cols-2 gap-3.5 max-w-150 mt-9">
-        <div
-          class="flex items-center justify-between h-12.5 px-3.5 border border-g-300 cursor-pointer rounded-lg text-sm bg-g-100 duration-300 hover:-translate-y-1"
-          v-for="link in linkList"
-          :key="link.label"
-          @click="goPage(link.url)"
-        >
-          <span class="text-g-700">{{ link.label }}</span>
-          <FaSvgIcon icon="ri:arrow-right-s-line" class="text-lg text-g-600" />
-        </div>
+    <div class="grid grid-cols-2 gap-3.5 mt-6">
+      <div
+        class="flex items-center gap-3 h-16 px-3.5 border border-g-300 rounded-lg bg-g-100"
+        v-for="item in capabilities"
+        :key="item.label"
+      >
+        <FaSvgIcon :icon="item.icon" class="text-xl text-theme shrink-0" />
+        <span class="min-w-0">
+          <span class="block text-sm text-g-800 font-medium leading-tight">{{ item.label }}</span>
+          <span class="block mt-1 text-xs text-g-600">{{ item.desc }}</span>
+        </span>
       </div>
     </div>
-    <img class="w-75 max-md:hidden!" src="@imgs/draw/draw1.png" alt="draw1" loading="eager" />
   </div>
 </template>
 
 <script setup lang="ts">
 import AppConfig from "@/config";
-import { WEB_LINKS } from "@utils";
 
 const systemName = AppConfig.systemInfo.name;
 
-const linkList = [
-  { label: "项目官网", url: WEB_LINKS.DOCS },
-  { label: "文档", url: WEB_LINKS.INTRODUCE },
-  { label: "Github", url: WEB_LINKS.GITHUB_HOME },
-  { label: "Gitee", url: WEB_LINKS.GITEE },
+const capabilities = [
+  { label: "软件编译", desc: "源码编译与交叉编译", icon: "ri:code-s-slash-line" },
+  { label: "软件打包", desc: "组件打包、签名与归档", icon: "ri:archive-line" },
+  { label: "构建发布", desc: "流水线构建与版本发布", icon: "ri:git-branch-line" },
+  { label: "制品管理", desc: "构建产物与版本追溯", icon: "ri:inbox-archive-line" },
 ];
-
-/**
- * 在新标签页中打开指定 URL
- * @param url 要打开的网页地址
- */
-const goPage = (url: string): void => {
-  window.open(url, "_blank", "noopener,noreferrer");
-};
 </script>

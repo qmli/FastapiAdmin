@@ -10,19 +10,17 @@
 #
 # 用法：
 #   ./deploy-artifacts.sh web                 # Web 管理后台（nginx /web）
-#   ./deploy-artifacts.sh app                 # 移动端 H5（nginx /app）
 #   ./deploy-artifacts.sh backend             # 构建并部署 MySQL 版后端镜像（切换线上）
 #   ./deploy-artifacts.sh backend-pg          # 只构建并自检 PostgreSQL 版镜像，不切换线上
-#   ./deploy-artifacts.sh all                 # 三样全发（后端默认 MySQL 版）
-#   ./deploy-artifacts.sh verify              # 公网四端验证
+#   ./deploy-artifacts.sh all                 # Web + 后端一起发（后端默认 MySQL 版）
+#   ./deploy-artifacts.sh verify              # 公网站点验证
 #   ./deploy-artifacts.sh backups             # 列出服务器上的备份
 #   ./deploy-artifacts.sh rollback web        # 回滚 Web 到最近一次备份
-#   ./deploy-artifacts.sh rollback app        # 回滚 H5 到最近一次备份
 #
 # 前置条件：
 #   - 本机 SSH 密钥可免密登录 root@$FA_SERVER
 #   - backend 目标需要本机 docker（Colima / Docker Desktop 均可）
-#   - frontend/web、frontend/app 依赖已安装（pnpm install）
+#   - frontend/web 依赖已安装（pnpm install）
 #
 # 环境变量覆盖：FA_SERVER、FA_REMOTE_ROOT、FA_BACKUP_DIR
 # ============================================================================
@@ -109,19 +107,6 @@ deploy_web() {
   ok "web 构建完成：$(du -sh frontend/web/dist | cut -f1)"
   push_dir frontend/web/dist "${REMOTE_ROOT}/docker/nginx/web/dist" "web"
   ok "Web 已上线"
-}
-
-# ---------- 移动端 H5 ----------
-deploy_app() {
-  log "构建移动端 H5"
-  ( cd frontend/app && pnpm run build:h5 >/tmp/fa-app-build.log 2>&1 ) \
-    || { tail -20 /tmp/fa-app-build.log; die "app 构建失败"; }
-  ok "H5 构建完成：$(du -sh frontend/app/dist/build/h5 | cut -f1)"
-  # nginx /app 用 alias 指向 app/dist，真实入口在 build/h5 下；
-  # try_files 回退到 /app/index.html，少一层就 500 内部重定向死循环
-  push_dir frontend/app/dist/build/h5 \
-           "${REMOTE_ROOT}/docker/nginx/app/dist/build/h5" "app-h5"
-  ok "H5 已上线"
 }
 
 # ---------- 后端镜像 ----------
@@ -269,15 +254,15 @@ print(\"    自检通过:\", len(mods), \"个 ${db} 驱动\")
 
 # ---------- 验证 ----------
 verify() {
-  log "公网四端验证"
+  log "公网站点验证"
   local fail=0
-  for p in "/" "/web/" "/app/" "/api/v1/monitor/health/check"; do
+  for p in "/" "/web/" "/api/v1/monitor/health/check"; do
     printf '  %-42s ' "$p"
     code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://service.fastapiadmin.com${p}")
     printf 'HTTP %s\n' "$code"
     [ "$code" = "200" ] || fail=1
   done
-  [ "$fail" -eq 0 ] && ok "四端全部 200" || die "存在非 200 端点"
+  [ "$fail" -eq 0 ] && ok "站点全部 200" || die "存在非 200 端点"
 }
 
 # ---------- 轮转清理：备份目录与镜像仓库，避免磁盘无限增长 ----------
@@ -322,14 +307,13 @@ list_backups() {
   ssh_do "ls -1t ${BACKUP_DIR} 2>/dev/null | head -20 || echo '  （还没有备份）'"
 }
 
-# rollback <web|app|backend>
+# rollback <web|backend>
 rollback() {
   local what="${1:-}"
   case "$what" in
     web)     _rollback_dir web     "${REMOTE_ROOT}/docker/nginx/web/dist" ;;
-    app)     _rollback_dir app-h5  "${REMOTE_ROOT}/docker/nginx/app/dist/build/h5" ;;
     backend) _rollback_image ;;
-    *) die "用法: $0 rollback <web|app|backend>" ;;
+    *) die "用法: $0 rollback <web|backend>" ;;
   esac
   verify
 }
@@ -366,10 +350,9 @@ _rollback_image() {
 
 case "${1:-}" in
   web)                 deploy_web;             verify; prune ;;
-  app)                 deploy_app;             verify; prune ;;
   backend)             deploy_backend mysql 1;    verify; prune ;;
   backend-pg)          deploy_backend postgres 0 ;;   # 只构建+自检，绝不自动切换生产
-  all)                 deploy_web; deploy_app; deploy_backend mysql 1; verify; prune ;;
+  all)                 deploy_web; deploy_backend mysql 1; verify; prune ;;
   verify)              verify ;;
   prune)               prune ;;
   backups)             list_backups ;;

@@ -1,9 +1,8 @@
-<!-- 用户菜单：合并旧版顶栏（配置中心、Gitee、引导）+ 新版 Popover 与链接结构 -->
+<!-- 用户菜单：头像弹出个人中心与锁屏 -->
 <template>
   <!-- inline-flex + items-center：与顶栏 FaIconButton 同一中线对齐，避免 Popover 触发层基线偏移 -->
   <div class="fa-user-menu inline-flex shrink-0 items-center leading-none">
     <ElPopover
-      ref="userMenuPopover"
       placement="bottom-end"
       :width="240"
       :hide-after="0"
@@ -64,32 +63,11 @@
               <span class="text-sm">{{ $t("topBar.user.userCenter") }}</span>
             </li>
             <li
-              class="flex items-center p-2 mb-3 select-none rounded-md cursor-pointer last:mb-0 hover:bg-(--el-color-primary)/10"
-              @click="toGithub()"
-            >
-              <FaSvgIcon icon="ri:github-line" class="mr-2 text-base" />
-              <span class="text-sm">{{ $t("topBar.user.github") }}</span>
-            </li>
-            <li
-              class="flex items-center p-2 mb-3 select-none rounded-md cursor-pointer last:mb-0 hover:bg-(--el-color-primary)/10"
-              @click="toGitee"
-            >
-              <FaSvgIcon icon="ri:git-branch-line" class="mr-2 text-base" />
-              <span class="text-sm">{{ $t("topBar.user.gitee") }}</span>
-            </li>
-            <li
-              class="flex items-center p-2 mb-3 select-none rounded-md cursor-pointer last:mb-0 hover:bg-(--el-color-primary)/10"
+              class="flex items-center p-2 select-none rounded-md cursor-pointer last:mb-0 hover:bg-(--el-color-primary)/10"
               @click="lockScreen()"
             >
               <FaSvgIcon icon="ri:lock-line" class="mr-2 text-base" />
               <span class="text-sm">{{ $t("topBar.user.lockScreen") }}</span>
-            </li>
-            <div class="w-full h-px my-2 bg-g-300/80"></div>
-            <li
-              class="flex p-2 select-none rounded-md cursor-pointer last:mb-0 hover:bg-(--fa-gray-200) justify-center mt-5 mb-0 py-1.5 text-xs border border-g-400 hover:text-(--el-color-danger) hover:border-(--el-color-danger-light-3)"
-              @click="handleLogout"
-            >
-              {{ $t("topBar.user.logout") }}
             </li>
           </ul>
         </div>
@@ -99,20 +77,16 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { ElMessageBox } from "element-plus";
 import { useUserStore } from "@stores";
-import { WEB_LINKS, mittBus } from "@utils";
+import { mittBus } from "@utils";
 
 defineOptions({ name: "FaUserMenu" });
 
 const router = useRouter();
-const { t } = useI18n();
 const userStore = useUserStore();
 
 const { info: userInfo } = storeToRefs(userStore);
-const userMenuPopover = ref();
 
 const userAvatar = computed(() => {
   const a = (userInfo.value as { avatar?: string })?.avatar?.trim();
@@ -132,38 +106,8 @@ function goPage(path: string): void {
   router.push(path);
 }
 
-function toGithub(): void {
-  window.open(WEB_LINKS.GITHUB);
-}
-
-function toGitee(): void {
-  window.open(WEB_LINKS.GITEE);
-}
-
 function lockScreen(): void {
   mittBus.emit("openLockScreen");
-}
-
-function handleLogout(): void {
-  closeUserMenu();
-  setTimeout(async () => {
-    try {
-      await ElMessageBox.confirm(t("common.logoutTips"), t("common.tips"), {
-        confirmButtonText: t("common.confirm"),
-        cancelButtonText: t("common.cancel"),
-        customClass: "login-out-dialog",
-      });
-      await userStore.logout();
-    } catch {
-      // 用户取消
-    }
-  }, 200);
-}
-
-function closeUserMenu(): void {
-  setTimeout(() => {
-    userMenuPopover.value?.hide?.();
-  }, 100);
 }
 </script>
 

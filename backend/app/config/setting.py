@@ -108,6 +108,7 @@ class Settings(BaseSettings):
     # ================================================= #
     # ******************** Redis配置 ******************* #
     # ================================================= #
+    REDIS_ENABLE: bool = False  # lqm rm 为 false 时不连接 Redis。对应的 Redis 调用已在代码里注释保留，不是删除；会话/缓存/锁/验证码直接读写 sys_cache
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB_NAME: int = 1
@@ -136,22 +137,9 @@ class Settings(BaseSettings):
     PASSWORD_IMPORT_DEFAULT: str = "123456"
 
     # ================================================= #
-    # ***************** 第三方 OAuth 登录（可选）********* #
+    # ********* 自动注册登录用户的默认角色（微信小程序）*** #
     # ================================================= #
     OAUTH_DEFAULT_ROLE_IDS: list[int] = [2]
-    OAUTH_FRONTEND_FALLBACK: str = "http://127.0.0.1:5173/login"
-    OAUTH_GITHUB_CLIENT_ID: str = ""
-    OAUTH_GITHUB_CLIENT_SECRET: str = ""
-    OAUTH_GITEE_CLIENT_ID: str = ""
-    OAUTH_GITEE_CLIENT_SECRET: str = ""
-    OAUTH_WECHAT_OPEN_APP_ID: str = ""
-    OAUTH_WECHAT_OPEN_APP_SECRET: str = ""
-    OAUTH_QQ_APP_ID: str = ""
-    OAUTH_QQ_APP_SECRET: str = ""
-    OAUTH_STATE_TTL: int = 600  # OAuth state 参数过期时间（秒）
-    # 生产回跳域名白名单（**不再是通配符 "*"**）：OAuth 回调域名必须命中其中之一。
-    # 非生产环境通常用 localhost/容器域名登录，故默认一并放行本机与回环地址；生产可按需收敛。
-    OAUTH_ALLOWED_HOSTS: list[str] = ["service.fastapiadmin.com", "*.fastapiadmin.com", "localhost", "127.0.0.1", "[::1]"]
 
     # ================================================= #
     # *************** 微信小程序配置（可选）************** #

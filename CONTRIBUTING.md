@@ -25,9 +25,6 @@ cd backend && uv sync && uv run main.py run --env=dev
 # 前端
 cd frontend/web && pnpm install && pnpm run dev
 
-# 小程序（uni-app，微信开发者工具导入 dist/dev/mp-weixin）
-cd frontend/app && pnpm install && pnpm dev:mp-weixin
-
 # 文档
 cd frontend/docs && pnpm install && pnpm run dev
 ```

@@ -27,10 +27,6 @@ Instead of traditional layered architecture (Controller → Service → DAO), Fa
 
 Starting from v2.0, the AI Code Generator allows you to select a database table and have AI automatically generate full CRUD code (Controller / Service / Model / Vue pages) — in practice this covers roughly 90% of routine CRUD, with the remaining 10% requiring customisation.
 
-### 📱 Multi-Platform Delivery
-
-Built on UniApp, one codebase generates H5, WeChat Mini Program, Alipay Mini Program, and native App simultaneously. The backend API layer naturally supports multi-platform reuse without duplicating interfaces.
-
 ## Project Highlights
 
 | Dimension | Description |

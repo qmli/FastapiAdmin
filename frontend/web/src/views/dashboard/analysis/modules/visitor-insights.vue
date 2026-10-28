@@ -2,7 +2,8 @@
   <div class="fa-card h-82 p-5 mb-5 max-sm:mb-4 flex flex-col">
     <div class="fa-card-header">
       <div class="title">
-        <h4>访客洞察</h4>
+        <h4>功能使用趋势</h4>
+        <p>BSW 配置与代码生成</p>
       </div>
     </div>
     <FaLineChart
@@ -20,24 +21,17 @@
 <script setup lang="ts">
 import type { LineDataItem } from "@/types/component/chart";
 
-/**
- * X 轴数据配置
- * 表示一年的月份（1-12月）
- */
 const xAxisData = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
-/**
- * 访客洞察图表数据
- * 对比老客户和新客户的全年访问趋势
- */
+/** 全年各月的 BSW 配置与代码生成次数 */
 const chartData = computed<LineDataItem[]>(() => [
   {
-    name: "老客户",
-    data: [280, 350, 300, 250, 230, 210, 240, 280, 320, 350, 300, 200],
+    name: "BSW 配置",
+    data: [120, 132, 128, 140, 150, 148, 160, 172, 168, 180, 176, 186],
   },
   {
-    name: "新客户",
-    data: [260, 200, 150, 130, 180, 270, 340, 380, 300, 220, 170, 130],
+    name: "代码生成",
+    data: [60, 64, 58, 70, 72, 68, 80, 84, 78, 88, 90, 96],
   },
 ]);
 </script>

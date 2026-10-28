@@ -47,43 +47,47 @@ services:
         reservations:
           memory: 256m
 
-  # ==================== Redis 服务 ====================
-  redis:
-    container_name: redis
-    image: redis:7-alpine
-    restart: unless-stopped
-    platform: linux/amd64
-    environment:
-      TZ: "Asia/Shanghai"
-    ports:
-      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
-      # 挂载自定义 redis.conf（若存在则覆盖默认配置）
-      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
-    command: >
-      redis-server /usr/local/etc/redis/redis.conf
-      --requirepass ${REDIS_PASSWORD:?错误: 请设置 REDIS_PASSWORD 环境变量}
-    networks:
-      - app_network
-    healthcheck:
-      test:
-        ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    deploy:
-      resources:
-        limits:
-          memory: 512m
-        reservations:
-          memory: 128m
+  # ==================== Redis 服务（lqm rm 已注释，不是删除） ====================
+  # lqm rm 暂时不启动 Redis：应用 REDIS_ENABLE=false，会话/缓存/锁直接读写数据库。
+  # lqm rm 这里只是整段注释，不是强制删除——容器定义、redis/data 数据目录都还在。
+  # 已在运行的 redis 容器也不会被本文件删掉；不要加 --remove-orphans，否则 Compose 会把它当孤立容器清掉。
+  # 恢复：取消下面注释，把 REDIS_ENABLE 改回 true，并恢复 backend.depends_on 里的 redis。
+  # redis:
+  #   container_name: redis
+  #   image: redis:7-alpine
+  #   restart: unless-stopped
+  #   platform: linux/amd64
+  #   environment:
+  #     TZ: "Asia/Shanghai"
+  #   ports:
+  #     - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #     # 挂载自定义 redis.conf（若存在则覆盖默认配置）
+  #     - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+  #   command: >
+  #     redis-server /usr/local/etc/redis/redis.conf
+  #     --requirepass ${REDIS_PASSWORD:?错误: 请设置 REDIS_PASSWORD 环境变量}
+  #   networks:
+  #     - app_network
+  #   healthcheck:
+  #     test:
+  #       ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 512m
+  #       reservations:
+  #         memory: 128m
 
   # ==================== 后端服务 ====================
   backend:
@@ -111,7 +115,8 @@ services:
       REDIS_PORT: "6379"
       REDIS_PASSWORD: "${REDIS_PASSWORD}"
       REDIS_DB_NAME: "1"
-      REDIS_ENABLE: "true"
+      # false：不连接 Redis，会话/缓存/锁/验证码直接读写数据库
+      REDIS_ENABLE: "false"
       # 日志级别
       LOGGER_LEVEL: "${LOGGER_LEVEL:-INFO}"
       # 信任反向代理（nginx）传来的 X-Forwarded-Proto/For：否则 prod 的
@@ -154,8 +159,9 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+      # lqm rm redis 依赖已注释，不是删除。恢复 Redis 时取消下面两行注释（需同时取消 redis 服务注释）。
+      # redis:
+      #   condition: service_healthy
     networks:
       - app_network
     # 健康检查必须带正确的 Host 头：应用启用了 TrustedHostMiddleware，
@@ -199,7 +205,6 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/web:/usr/share/nginx/html/web:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./nginx/app:/usr/share/nginx/html/app:ro
       - ./nginx/docs:/usr/share/nginx/html/docs:ro
     depends_on:
       backend:
@@ -232,12 +237,13 @@ volumes:
       type: none
       device: ./mysql/data
       o: bind
-  redis_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./redis/data
-      o: bind
+  # lqm rm redis_data 已注释，不是删除。./redis/data 目录和里面的数据都保留。恢复 Redis 时取消注释。
+  # redis_data:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: ./redis/data
+  #     o: bind
 
 # ==================== 网络 ====================
 networks:

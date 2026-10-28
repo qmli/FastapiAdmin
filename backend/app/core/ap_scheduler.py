@@ -20,7 +20,7 @@ from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.executors.pool import ProcessPoolExecutor, ThreadPoolExecutor
 from apscheduler.job import Job
 from apscheduler.jobstores.memory import MemoryJobStore
-from apscheduler.jobstores.redis import RedisJobStore
+from apscheduler.jobstores.redis import RedisJobStore  # noqa: F401  # lqm rm 下方 RedisJobStore 配置已注释，保留导入，不是删除
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -67,19 +67,33 @@ SCHEDULER_LOCK_TTL = 30  # 锁有效期（秒）；须大于续期间隔，否�
 SCHEDULER_RENEW_INTERVAL = 10  # 持有者续期间隔
 SCHEDULER_POLL_INTERVAL = 5  # 候选进程争抢间隔；越小接管越快，Redis 压力越大
 
+def _build_jobstores() -> dict[str, Any]:
+    """任务存储器。RedisJobStore 已注释（lqm rm），不是删除；default 直接落在数据库。"""
+    memory_store = MemoryJobStore()
+    # default 使用历史表 apscheduler_jobs。sqlalchemy 别名单独一张表，
+    # 避免两个 jobstore 扫描同一张表把同一任务执行两次。
+    return {
+        "default": SQLAlchemyJobStore(url=settings.DB_URI, engine=engine, tablename="apscheduler_jobs"),
+        "sqlalchemy": SQLAlchemyJobStore(url=settings.DB_URI, engine=engine, tablename="apscheduler_jobs_sqlalchemy"),
+        "memory": memory_store,
+    }
+    # lqm rm 原 Redis 存储器（已注释，不是删除）。恢复时用下面这段替换上面的 return，并取消 Redis 服务注释。
+    # return {
+    #     "default": RedisJobStore(
+    #         host=settings.REDIS_HOST,
+    #         port=int(settings.REDIS_PORT),
+    #         username=settings.REDIS_USER or None,
+    #         password=settings.REDIS_PASSWORD or None,
+    #         db=int(settings.REDIS_DB_NAME),
+    #     ),
+    #     "sqlalchemy": SQLAlchemyJobStore(url=settings.DB_URI, engine=engine),
+    #     "memory": memory_store,
+    # }
+
+
 scheduler = AsyncIOScheduler()
 scheduler.configure(
-    jobstores={
-        "default": RedisJobStore(
-            host=settings.REDIS_HOST,
-            port=int(settings.REDIS_PORT),
-            username=settings.REDIS_USER or None,
-            password=settings.REDIS_PASSWORD or None,
-            db=int(settings.REDIS_DB_NAME),
-        ),
-        "sqlalchemy": SQLAlchemyJobStore(url=settings.DB_URI, engine=engine),
-        "memory": MemoryJobStore(),
-    },
+    jobstores=_build_jobstores(),
     executors={
         "default": AsyncIOExecutor(),
         "threadpool": ThreadPoolExecutor(max_workers=10),
@@ -132,11 +146,15 @@ class SchedulerUtil:
         - None
         """
         try:
-            if redis:
-                cls.redis_instance = redis
-                cls._redis = redis
+            if settings.WORKERS > 1:
+                logger.warning("Redis 选主已注释且 WORKERS>1，定时任务无法选主，每个进程都会执行。请将 WORKERS 设为 1")
+            # lqm rm 原 Redis 选主（已注释，不是删除）。恢复时取消下面两行注释。
+            # if redis:
+            #     cls.redis_instance = redis
+            #     cls._redis = redis
             if await cls._ensure_scheduler_running():
-                logger.info("✅ 本进程持有调度器锁，定时任务调度器已启动")
+                logger.info("✅ 定时任务调度器已启动（任务直接写入数据库）")
+                # lqm rm logger.info("✅ 本进程持有调度器锁，定时任务调度器已启动")
             else:
                 logger.info("🔄 调度器由其它进程持有，本进程转为候选（异常退出后自动接管）")
         except Exception as e:

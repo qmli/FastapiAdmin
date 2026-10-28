@@ -4,7 +4,7 @@
      </p>
      <h1>FastApiAdmin <sup style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.4em; vertical-align: super; margin-left: 5px;">v3.0.0</sup></h1>
      <h3>🚀 追求极致代码质量，五分钟搭建企业级中后台，开箱即用</h3>
-     <p>基于 <b>FastAPI + Vue3 + TypeScript</b> 的全栈快速开发平台，Web / H5 / 小程序一站式交付</p>
+     <p>基于 <b>FastAPI + Vue3 + TypeScript</b> 的全栈快速开发平台，开箱即用的企业级中后台</p>
      <p align="center">
           <a href="https://github.com/fastapiadmin/FastapiAdmin.git" target="_blank">
                <img src="https://img.shields.io/github/stars/fastapiadmin/FastapiAdmin?style=social" alt="GitHub Stars">
@@ -44,14 +44,6 @@
 
 ![仪表盘](frontend/web/public/dashboard.png)
 
-**移动端（H5 / 小程序 / App 同一套代码）**
-
-<p>
-<img src="frontend/web/public/app_login.png" width="180" />
-<img src="frontend/web/public/app_home.png" width="180" />
-<img src="frontend/web/public/app_mine.png" width="180" />
-</p>
-
 ## 💡 为什么选择 FastapiAdmin？
 
 | 你需要的 | FastapiAdmin | Django Admin | 纯前端模板 |
@@ -60,7 +52,6 @@
 | ⚡ **FastAPI 异步**高性能后端 | ✅ | ❌ 同步为主 | ❌ 无后端 |
 | 🔐 **RBAC** 菜单/按钮/数据三级权限 | ✅ | ❌ 基础 | ❌ |
 | 🤖 **代码生成器**（选表 → 出前后端代码） | ✅ | ❌ | ❌ |
-| 📱 **移动端**（H5 + 小程序）一体 | ✅ | ❌ | ❌ |
 | 🐳 **Docker 一键部署**（含 Nginx + SSL） | ✅ | ❌ | ❌ |
 
 > 👉 详细技术选型对比：[为什么选择 FastapiAdmin？](https://service.fastapiadmin.com/guide/why)
@@ -70,7 +61,6 @@
 | 端 | 地址 | 账号 |
 |----|------|------|
 | 💻 Web 端 | [service.fastapiadmin.com/web](https://service.fastapiadmin.com/web) | `admin` / `123456` |
-| 📱 移动端 | [service.fastapiadmin.com/app](https://service.fastapiadmin.com/app) | `admin` / `123456` |
 | 📖 官方文档 | [service.fastapiadmin.com](https://service.fastapiadmin.com) | 无需登录 |
 
 ## 🚀 5 分钟本地跑起来
@@ -113,7 +103,6 @@ FastapiAdmin/            # Monorepo 全栈工程
 ├─ backend/              # FastAPI 后端（Pydantic 2.0 + SQLAlchemy + Alembic）
 ├─ frontend/
 │   ├── web/             # Vue3 Web 前端（Element Plus + TypeScript）
-│   ├── app/             # UniApp 移动端（H5 + 小程序 + App）
 │   └── docs/            # VitePress 文档网站
 ├─ docker/               # Docker Compose 一键部署（Nginx + SSL）
 ├─ deploy.sh             # 一键部署脚本
@@ -169,7 +158,7 @@ ENABLED_MODULES = ["generator", "task", "storage"]
 ## 📖 文档地址
 
 - 🌐 [官网文档](https://service.fastapiadmin.com) — 完整开发指南、架构设计、二开教程
-- 📁 子工程 README：[backend](backend/README.md) · [web](frontend/web/README.md) · [移动端](frontend/app/README.md) · [Docker](docker/README.md)
+- 📁 子工程 README：[backend](backend/README.md) · [web](frontend/web/README.md) · [Docker](docker/README.md)
 
 ## 🤝 参与贡献
 
@@ -199,5 +188,4 @@ ENABLED_MODULES = ["generator", "task", "storage"]
 
 - 后端：[FastAPI](https://fastapi.tiangolo.com/) · [Pydantic](https://docs.pydantic.dev/) · [SQLAlchemy](https://www.sqlalchemy.org/) · [APScheduler](https://github.com/agronholm/apscheduler)
 - 前端：[Vue3](https://cn.vuejs.org/) · [TypeScript](https://www.typescriptlang.org/) · [Vite](https://vitejs.dev/) · [Element Plus](https://element-plus.org/)
-- 移动端：[UniApp](https://uniapp.dcloud.net.cn/) · [Wot Design Uni](https://wot-ui.cn/)
 - AI：[Agno](https://github.com/agno-agi/agno)

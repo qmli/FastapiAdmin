@@ -135,7 +135,7 @@ class IpLocalUtil:
     @classmethod
     async def _is_location_enabled(cls, redis) -> bool:
         """从参数缓存读取 IP 归属地查询开关。"""
-        if not redis:
+        if settings.REDIS_ENABLE and not redis:
             return False
         redis_key = f"{RedisInitKeyConfig.SYSTEM_CONFIG.key}:{SysParamKey.IP_LOCATION_ENABLE.value}"
         try:

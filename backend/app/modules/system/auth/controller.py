@@ -1,12 +1,12 @@
 import base64
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Body, Depends, Path, Query, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import APIRouter, Body, Depends, Request
+from fastapi.responses import JSONResponse
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.response import ErrorResponse, RedirectContentResponse, ResponseSchema, SuccessResponse
+from app.common.response import ErrorResponse, ResponseSchema, SuccessResponse
 from app.config.setting import settings
 from app.core.base_schema import JWTOutSchema
 from app.core.dependencies import db_getter, get_current_user, redis_getter
@@ -14,7 +14,6 @@ from app.core.logger import logger
 from app.core.router_class import OperationLogRoute
 from app.core.security import CustomOAuth2PasswordRequestForm
 
-from .oauth_service import OAuthProvider, finish_oauth_login, start_oauth_login
 from .schema import (
     CaptchaOutSchema,
     LoginOutSchema,
@@ -88,44 +87,6 @@ async def logout_controller(
         logger.info("退出成功")
         return SuccessResponse(msg="退出成功")
     return ErrorResponse(msg="退出失败")
-
-
-@AuthRouter.get("/oauth/{provider}/login", summary="第三方OAuth跳转")
-async def oauth_login_redirect_controller(
-    request: Request,
-    redis: Annotated[Redis, Depends(redis_getter)],
-    provider: Annotated[OAuthProvider, Path(description="wechat | qq | github | gitee")],
-    redirect_uri: Annotated[str | None, Query(description="OAuth 完成后浏览器回到的前端登录页完整 URL")] = None,
-) -> RedirectResponse:
-    """跳转第三方授权页；入参缺失或渠道密钥未配置时自动降级为错误重定向。"""
-    url: str = await start_oauth_login(
-        request=request,
-        redis=redis,
-        provider=provider,
-        redirect_uri=redirect_uri,
-    )
-    return RedirectContentResponse(url, 302)
-
-
-@AuthRouter.get("/oauth/{provider}/callback", summary="第三方OAuth回调", include_in_schema=False)
-async def oauth_callback_controller(
-    request: Request,
-    redis: Annotated[Redis, Depends(redis_getter)],
-    db: Annotated[AsyncSession, Depends(db_getter)],
-    provider: Annotated[OAuthProvider, Path(description="wechat | qq | github | gitee")],
-    code: Annotated[str | None, Query(description="OAuth 授权码")] = None,
-    state: Annotated[str | None, Query(description="OAuth 状态参数")] = None,
-) -> RedirectResponse:
-    """处理第三方平台回调并回跳前端登录页（成功携带令牌 / 失败携带原因）。"""
-    url: str = await finish_oauth_login(
-        request=request,
-        redis=redis,
-        db=db,
-        provider=provider,
-        code=code,
-        state=state,
-    )
-    return RedirectContentResponse(url, 302)
 
 
 # =================================================== #

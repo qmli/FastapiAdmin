@@ -571,8 +571,8 @@
                                 "is_iframe": false,
                                 "is_hide_tab": false,
                                 "active_path": null,
-                                "show_badge": true,
-                                "show_text_badge": "NEW"
+                                "show_badge": false,
+                                "show_text_badge": null
                         },
                         {
                                 "name": "部门管理",
@@ -1960,8 +1960,8 @@
                                 "is_iframe": false,
                                 "is_hide_tab": false,
                                 "active_path": null,
-                                "show_badge": true,
-                                "show_text_badge": "NEW"
+                                "show_badge": false,
+                                "show_text_badge": null
                         },
                         {
                                 "name": "版本管理",
@@ -2112,8 +2112,8 @@
                                 "is_iframe": false,
                                 "is_hide_tab": false,
                                 "active_path": null,
-                                "show_badge": true,
-                                "show_text_badge": "NEW"
+                                "show_badge": false,
+                                "show_text_badge": null
                         }
                 ],
                 "link": null,
@@ -2326,8 +2326,8 @@
                 "is_iframe": false,
                 "is_hide_tab": false,
                 "active_path": null,
-                "show_badge": true,
-                "show_text_badge": "NEW"
+                "show_badge": false,
+                "show_text_badge": null
         },
         {
                 "name": "接口管理",

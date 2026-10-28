@@ -52,7 +52,6 @@ backend/env/.env.prod
 backend/env/.env.test
 
 docker/.env
-docker/nginx/app/dist
 docker/nginx/docs/dist
 docker/nginx/web/dist
 docker/nginx/ssl/*
@@ -64,9 +63,6 @@ frontend/web/.env.production
 
 # frontend/docs/*
 !frontend/docs/.gitkeep
-
-# frontend/app/*
-!frontend/app/.gitkeep
 
 .plan
 CLAUDE.md

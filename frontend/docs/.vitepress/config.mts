@@ -15,7 +15,6 @@ const zhGuideSidebar = [
     items: [
       { text: '前端开发指南', link: '/guide/frontend' },
       { text: '后端开发指南', link: '/guide/backend' },
-      { text: '移动端开发指南', link: '/guide/miniprogram' },
       { text: '开发规范', link: '/guide/guidelines' },
     ],
   },
@@ -43,7 +42,6 @@ const enGuideSidebar = [
     items: [
       { text: 'Frontend Development Guide', link: '/en/guide/frontend' },
       { text: 'Backend Development Guide', link: '/en/guide/backend' },
-      { text: 'Miniprogram Development Guide', link: '/en/guide/miniprogram' },
       { text: 'Development Guidelines', link: '/en/guide/guidelines' },
     ],
   },
@@ -123,7 +121,6 @@ export default defineConfig({
             items: [
               { text: '前端开发指南', link: '/guide/frontend' },
               { text: '后端开发指南', link: '/guide/backend' },
-              { text: '移动端开发指南', link: '/guide/miniprogram' },
               { text: '开发规范', link: '/guide/guidelines' },
             ],
           },
@@ -184,7 +181,6 @@ export default defineConfig({
             items: [
               { text: 'Frontend Development Guide', link: '/en/guide/frontend' },
               { text: 'Backend Development Guide', link: '/en/guide/backend' },
-              { text: 'Miniprogram Development Guide', link: '/en/guide/miniprogram' },
               { text: 'Development Guidelines', link: '/en/guide/guidelines' },
             ],
           },

@@ -3,10 +3,10 @@
     <div class="fa-card-header">
       <div class="title">
         <h4 class="text-2xl">
-          <span>14.5k</span>
+          <span>186</span>
           <FaSvgIcon icon="ri:arrow-right-up-line" class="text-success text-lg ml-1" />
         </h4>
-        <p>销售量</p>
+        <p>编译次数</p>
       </div>
     </div>
 
@@ -14,7 +14,7 @@
       :showAxisLabel="false"
       :showAxisLine="false"
       :showSplitLine="false"
-      :data="[50, 80, 50, 90, 60, 70, 50]"
+      :data="[18, 22, 19, 25, 21, 28, 36]"
       barWidth="16px"
       height="5.6rem"
     />

@@ -17,78 +17,65 @@
               <ElRow :gutter="20">
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
                   <FaStatsCard
-                    :icon="'ri:money-cny-box-line'"
-                    :iconStyle="'bg-theme'"
-                    :boxStyle="'bg-theme/10!'"
-                    :title="'总收入'"
-                    :description="'月收入超过¥350,000+'"
-                    :count="35000"
-                    :textColor="'var(--theme-color)'"
+                    icon="ri:hammer-line"
+                    iconStyle="bg-theme"
+                    boxStyle="bg-theme/10!"
+                    title="今日构建"
+                    description="4 个失败"
+                    :count="36"
+                    textColor="var(--theme-color)"
                     :decimals="0"
                     :showArrow="false"
-                    separator=","
-                    customIconStyle="'text-theme! text-3xl!''"
                   />
                 </ElCol>
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
-                  <FaProgressCard
-                    :percentage="65"
-                    :title="'任务进度'"
-                    :color="'var(--theme-color)'"
-                  />
+                  <FaProgressCard :percentage="89" title="构建成功率" color="var(--theme-color)" />
                 </ElCol>
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
-                  <FaProgressCard
-                    :percentage="80"
-                    :title="'任务进度'"
-                    :color="'var(--theme-color)'"
-                    :icon="'ri:twitch-line'"
-                    :iconStyle="'bg-theme/12 text-theme'"
-                  />
+                  <FaProgressCard :percentage="86" title="编译通过率" color="var(--theme-color)" />
                 </ElCol>
               </ElRow>
               <ElRow :gutter="20">
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
                   <FaBarChartCard
                     :isMiniChart="true"
-                    :value="15480"
-                    label="浏览量"
+                    :value="186"
+                    label="构建次数"
                     date="过去14天"
-                    :percentage="-4.15"
+                    :percentage="8.6"
                     :height="9.5"
                     barWidth="45%"
-                    :chartData="[120, 100, 150, 140, 90, 120, 130]"
+                    :chartData="[18, 22, 19, 25, 21, 28, 36]"
                   />
                 </ElCol>
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
                   <FaLineChartCard
                     :isMiniChart="true"
-                    :value="2545"
-                    label="粉丝数"
+                    :value="42"
+                    label="打包产物"
                     date="过去30天"
-                    :percentage="1.2"
+                    :percentage="12.4"
                     :height="9.5"
                     :showAreaColor="true"
-                    :chartData="[150, 180, 160, 200, 180, 220, 240]"
+                    :chartData="[4, 5, 3, 6, 5, 8, 7]"
                   />
                 </ElCol>
                 <ElCol :xs="24" :sm="8" :md="8" class="mb-5">
                   <FaDonutChartCard
-                    :value="36358"
-                    title="粉丝量"
-                    :percentage="18"
-                    percentageLabel="较去年"
-                    :data="[50, 40]"
+                    :value="128"
+                    title="构建量"
+                    :percentage="6.2"
+                    :data="[112, 16]"
                     :height="9.5"
-                    currentValue="2022"
-                    previousValue="2021"
+                    currentValue="成功"
+                    previousValue="失败"
                     :radius="['50%', '70%']"
                   />
                 </ElCol>
               </ElRow>
             </ElCol>
             <ElCol :xs="24" :md="8" class="mb-5">
-              <FaTimelineListCard :list="timelineData" title="最近交易" subtitle="2024年12月20日" />
+              <FaTimelineListCard :list="timelineData" title="最近构建" :subtitle="todayLabel" />
             </ElCol>
           </ElRow>
 
@@ -104,13 +91,13 @@
                       <span
                         class="text-base font-semibold tracking-[0.02em]"
                         style="color: var(--el-text-color-primary)"
-                        >日程日历</span
+                        >发布日历</span
                       >
                       <p
                         class="mt-0.5 text-xs font-normal leading-[1.45]"
                         style="color: var(--el-text-color-secondary)"
                       >
-                        点击日期添加或编辑（本地演示）
+                        近期版本发布与构建窗口
                       </p>
                     </div>
                   </div>
@@ -121,7 +108,7 @@
               </ElCard>
             </ElCol>
             <ElCol :xs="24" :sm="12" :md="12" class="mb-5">
-              <NewUser />
+              <BuildJobs />
             </ElCol>
           </ElRow>
         </ElCol>
@@ -143,7 +130,7 @@
 
       <ElRow :gutter="20">
         <ElCol :xs="24" :sm="6" :md="6" class="mb-5">
-          <ImageCards />
+          <Artifacts />
         </ElCol>
         <ElCol :xs="24" :sm="6" :md="6" class="mb-5">
           <ItBanners />
@@ -159,14 +146,14 @@
 <script setup lang="ts">
 defineOptions({ name: "Home", inheritAttrs: false });
 
-import { ref, onMounted, onUnmounted, defineAsyncComponent } from "vue";
+import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from "vue";
 import { ElMessage } from "element-plus";
 import DashboardAPI from "@/api/module_monitor/dashboard";
 import { getDashboardMock, type HealthItem } from "@/mock/dashboard";
-import ImageCards from "./modules/image_cards.vue";
+import Artifacts from "./modules/artifacts.vue";
 import ItBanners from "./modules/it_banners.vue";
 import Banner from "./modules/banner.vue";
-import NewUser from "./modules/new-user.vue";
+import BuildJobs from "./modules/build-jobs.vue";
 import TodoList from "./modules/todo-list.vue";
 import CardList from "./modules/card-list.vue";
 import AboutProject from "./modules/about-project.vue";
@@ -176,6 +163,11 @@ const mock = getDashboardMock();
 const loading = ref(false);
 const healthList = ref<HealthItem[]>(mock.health); // 初值 mock 兜底，健康流首帧到达即覆盖
 const timelineData = ref(mock.timeline);
+
+const todayLabel = computed(() => {
+  const now = new Date();
+  return `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+});
 
 let unsubscribeHealth: (() => void) | null = null;
 

@@ -357,9 +357,6 @@
     "qrLoginTitle": "Welcome back 📱",
     "qrLoginSubTitle": "Scan the QR code with your phone to sign in",
     "qrLoginHint": "After scanning, tap Confirm on your phone to finish signing in",
-    "oauthNoticeTitle": "Notice",
-    "oauthLoginSuccess": "Signed in with your social account",
-    "oauthLoginFailed": "Social sign-in failed. Try username and password.",
     "comingSoon": "Coming soon",
     "accountLoginTab": "Account",
     "quickLoginTab": "Quick login",
@@ -432,13 +429,6 @@
         "required": "Please agree to the User Agreement"
       }
     },
-    "oauthTooltip": {
-      "wechat": "WeChat",
-      "qq": "QQ",
-      "github": "GitHub",
-      "gitee": "Gitee"
-    },
-    "otherLoginMethods": "Other",
     "resetPassword": "Reset password",
     "thinkOfPasswd": "Remember your password?",
     "agree": "I have read and agree to the",

@@ -88,7 +88,6 @@ const zhColumns: LinkColumn[] = [
   {
     title: '生态系统',
     links: [
-      { name: '移动端开发', href: '/guide/miniprogram' },
       { name: 'API 文档', href: '/guide/api-docs' },
       { name: '操作手册', href: '/guide/operation' },
       { name: '示例', href: '/guide/examples' },
@@ -120,7 +119,6 @@ const enColumns: LinkColumn[] = [
   {
     title: 'Ecosystem',
     links: [
-      { name: 'Mobile Development', href: '/en/guide/miniprogram' },
       { name: 'API Docs', href: '/en/guide/api-docs' },
       { name: 'User Manual', href: '/en/guide/operation' },
       { name: 'Examples', href: '/en/guide/examples' },

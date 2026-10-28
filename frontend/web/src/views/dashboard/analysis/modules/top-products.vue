@@ -2,12 +2,13 @@
   <div class="fa-card h-100 p-5 mb-5 max-sm:mb-4">
     <div class="fa-card-header">
       <div class="title">
-        <h4>热门产品</h4>
+        <h4>热门功能</h4>
+        <p>AUTOSAR 配置与生成</p>
       </div>
     </div>
     <ElScrollbar class="h-full">
       <FaTable
-        :data="products"
+        :data="features"
         :style="{ width: '100%' }"
         size="large"
         :border="false"
@@ -15,30 +16,30 @@
         :header-cell-style="{ background: 'transparent' }"
       >
         <ElTableColumn type="index" label="序号" width="60" />
-        <ElTableColumn prop="name" label="产品名称" width="200" />
-        <ElTableColumn prop="popularity" label="销量">
+        <ElTableColumn prop="name" label="功能" min-width="120" />
+        <ElTableColumn prop="share" label="占比">
           <template #default="scope">
             <ElProgress
-              :percentage="scope.row.popularity"
-              :color="getColor(scope.row.popularity)"
+              :percentage="scope.row.share"
+              :color="getColor(scope.row.share)"
               :stroke-width="5"
               :show-text="false"
             />
           </template>
         </ElTableColumn>
-        <ElTableColumn prop="sales" label="销量" width="80">
+        <ElTableColumn prop="calls" label="次数" width="80">
           <template #default="scope">
             <span
               :style="{
-                color: getColor(scope.row.popularity),
-                backgroundColor: `rgba(${hexToRgb(getColor(scope.row.popularity))}, 0.08)`,
+                color: getColor(scope.row.share),
+                backgroundColor: `rgba(${hexToRgb(getColor(scope.row.share))}, 0.08)`,
                 border: '1px solid',
                 padding: '3px 6px',
                 borderRadius: '4px',
                 fontSize: '12px',
               }"
             >
-              {{ scope.row.sales }}
+              {{ scope.row.calls }}
             </span>
           </template>
         </ElTableColumn>
@@ -50,10 +51,10 @@
 <script setup lang="ts">
 import { hexToRgb } from "@utils";
 
-interface Product {
+interface FeatureUsage {
   name: string;
-  popularity: number;
-  sales: string;
+  share: number;
+  calls: string;
 }
 
 const COLOR_THRESHOLDS = {
@@ -69,24 +70,16 @@ const POPULARITY_COLORS = {
   VERY_HIGH: "#FE8F0E",
 } as const;
 
-/**
- * 热门产品列表数据
- * 包含产品名称、热度和销量信息
- */
-const products = computed<Product[]>(() => [
-  { name: "智能手机", popularity: 10, sales: "100" },
-  { name: "笔记本电脑", popularity: 29, sales: "100" },
-  { name: "平板电脑", popularity: 65, sales: "100" },
-  { name: "智能手表", popularity: 32, sales: "100" },
-  { name: "无线耳机", popularity: 78, sales: "100" },
-  { name: "智能音箱", popularity: 41, sales: "100" },
+/** AUTOSAR 工具功能使用排行 */
+const features = computed<FeatureUsage[]>(() => [
+  { name: "BSW 模块配置", share: 92, calls: "412" },
+  { name: "RTE 生成", share: 74, calls: "186" },
+  { name: "通信栈配置", share: 61, calls: "130" },
+  { name: "诊断服务配置", share: 48, calls: "96" },
+  { name: "SWC 端口设计", share: 36, calls: "64" },
+  { name: "ARXML 导入", share: 28, calls: "48" },
 ]);
 
-/**
- * 根据热度百分比获取对应的颜色
- * @param percentage 热度百分比 (0-100)
- * @returns 对应的颜色值
- */
 const getColor = (percentage: number): string => {
   if (percentage < COLOR_THRESHOLDS.LOW) return POPULARITY_COLORS.LOW;
   if (percentage < COLOR_THRESHOLDS.MEDIUM) return POPULARITY_COLORS.MEDIUM;

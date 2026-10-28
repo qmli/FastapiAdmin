@@ -13,7 +13,6 @@ description: "FastapiAdmin full-stack dev guide: repo map, run/verify commands, 
 | --- | --- | --- |
 | `backend/` | 后端服务（入口 `main.py`，本地端口见 `app/config/setting.py` 的 SERVER_PORT，通常 8001） | FastAPI + SQLAlchemy + Alembic + Redis + uv |
 | `frontend/web/` | 管理后台（pnpm 包，Node >= 20） | Vue3 + Vite + TS + Element Plus + Tailwind4 + Pinia |
-| `frontend/app/` | 小程序/移动端 | uni-app（有独立约定，见 `frontend/app/.agents/skills/wot-ui-*`） |
 | `frontend/docs/` | 项目文档站（中英双语 `src/guide` 与 `src/en/guide`） | VitePress |
 | `docker/` | 部署（backend/mysql/nginx/redis） | docker-compose |
 | 根目录 | `README.md`、`REQUIREMENTS.md`、`CONTRIBUTING.md` | 需求与规范，做大功能前先读 |
@@ -68,13 +67,13 @@ pnpm test         # vitest
 pnpm build        # 构建
 ```
 
-`frontend/app`、`frontend/docs` 各自目录内 `pnpm` 管理自己。
+`frontend/docs` 在自己的目录内用 `pnpm` 管理。
 
 ### 首次启动（新人跑通）
 
 1. 复制 `backend/env/.env.example` 为 `.env.dev`，按文件头注释修改必改项（`DATABASE_PASSWORD` / `REDIS_PASSWORD` / `OPENAI_API_KEY`）；`DATABASE_TYPE` 支持 mysql / postgres / sqlite——本地体验用 sqlite 可零配置起跑
 2. `uv sync && uv run main.py run --env=dev`：**启动时自动执行迁移并导入 `sql/*.json` 种子数据**（菜单/角色/用户/字典等），无需手动建表导数；dev 环境检测到模型变更还会自动生成并应用迁移
-3. 前端：`frontend/web` 内 `pnpm install && pnpm dev`（小程序/App H5 调试用 `pnpm dev:h5`）
+3. 前端：`frontend/web` 内 `pnpm install && pnpm dev`
 4. 默认账号：`super` / `admin` / `user`，密码均为 `123456`（已校验种子 bcrypt 哈希；官方文档见 `frontend/docs/src/guide/start.md`，部署后应立即修改）
 5. 访问地址：Web 前端 `http://localhost:{VITE_PORT}`（`frontend/web/.env` 为 5180）；后端 `http://localhost:8001`、Swagger `http://localhost:8001/docs`、API 前缀 `/api/v1`
 - Docker 一键部署：根目录 `./deploy.sh`（详见 `docker/README.md`）
@@ -138,8 +137,6 @@ pnpm build        # 构建
 
 - 静态前端托管：`register_frontend`（`app/__init__.py`）检查与挂载必须用同一个 `path_conf.FRONTEND_DIST_DIR`（backend/dist）。曾因检查用 path_conf、挂载硬编码 `frontend/web/dist` 导致 500：`check_dir=False` 时启动不报错，**首次请求才炸**，必须看 loguru 日志（`backend/logs/fastapiadmin.log`）才能定位
 - 模板/脚本里不要用 `{% for %}` + `{% set %}` 累计布尔标志：Jinja2 for 块作用域隔离，循环外读到的仍是初值。用过滤器一次性计算，如 `{% set has_x = columns | selectattr('python_type', 'equalto', 'date') | list | length > 0 %}`（代码生成器 schema.py.jinja2 曾因此漏生成 validator import，生成产物 NameError、后端起不来）
-- 跨端需求（web + 小程序）要同时评估 `frontend/web` 与 `frontend/app` 两套代码，API 层各自维护
-- 小程序侧有自己的 skills（`frontend/app/.agents/skills/`），改小程序 UI 时遵循 wot-ui 约定
 - 文档站改动记得中英两份（`src/guide/` 与 `src/en/guide/`）
 
 ## 9. 前端产物验证（dist）
@@ -153,8 +150,6 @@ pnpm build        # 构建
 | `frontend/web/dist` | 构建输出（`pnpm build:prod` 的 outDir） |
 | `docker/nginx/web/dist` | docker 部署的 `/web`（`nginx.conf` 的 `alias /usr/share/nginx/html/web/dist`） |
 | `backend/dist` | 一体化部署时 `app.frontend("/")` 托管（`path_conf.FRONTEND_DIST_DIR`） |
-
-移动端同理：`docker/nginx/app/dist/build/h5`（nginx 的 `/app`）。
 
 **重建 + 同步**
 

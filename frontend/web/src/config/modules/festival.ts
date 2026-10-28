@@ -3,7 +3,7 @@
  *
  * 配置系统的节日烟花效果和祝福文本。
  * 支持单日节日和跨日期节日，可自定义烟花播放次数与连发间隔。
- * 同一天命中多条时，**日期区间更短**的一条优先生效（例如区间更短的节日条会盖住全年的「系统公告」）。
+ * 同一天命中多条时，**日期区间更短**的一条优先生效。
  *
  * ## 配置说明
  *
@@ -48,58 +48,6 @@
 
 import type { FestivalConfig } from "@/types/config";
 
-export const festivalConfigList: FestivalConfig[] = [
-  /**
-   * 非节日常驻：全年顶栏公告（匹配优先级最低，见文件头「优先级」说明）
-   */
-  {
-    name: "系统公告",
-    date: "2026-01-01",
-    endDate: "2026-12-31",
-    image: "",
-    skipFireworks: true,
-    isResidentBanner: true,
-    count: 3,
-    scrollText:
-      '🎉 {{version}}版本正式上线！能力全面提升，配套完整交付方案，助力高效开发与商业落地。 <a href="{{introduceUrl}}" target="_blank" rel="noopener noreferrer">👉 立即体验演示</a>',
-  },
-
-  /**
-   * 以下为历史示例片段（默认注释），需要时可取消注释并酌情调整日期 / import：
-   *
-   * 五月短区间示例：含当前日期则会出现节日滚动条；烟花需当日首次进入且未在同日标记已播。
-   * 上线前请改成真实活动日期与文案。
-   */
-  // {
-  //   name: "五月温馨提示",
-  //   date: "2026-05-04",
-  //   endDate: "2026-05-05",
-  //   image: yd,
-  //   count: 3,
-  //   scrollText:
-  //     "🎉 五月快乐！FastAPI Admin 祝您工作顺利、迭代顺利。本月请关注备份与安全策略，遇到问题可先查看文档或联系运维。",
-  // },
-
-  /** 单日示例（圣诞节）：需取消注释并确保已 import 雪花图 */
-  // {
-  //   name: "圣诞节",
-  //   date: "2026-12-25",
-  //   image: sd,
-  //   count: 3,
-  //   scrollText:
-  //     "Merry Christmas！祝您圣诞快乐，愿节日的欢乐与祝福如雪花般纷至沓来！",
-  // },
-
-  /** 版本公告类跨日期示例（仅文案参考，可按需改写 scrollText） */
-  // {
-  //   name: "v3.0 测试阶段",
-  //   date: "2026-11-03",
-  //   endDate: "2026-11-09",
-  //   image: "",
-  //   count: 3,
-  //   scrollText:
-  //     "🚀 系统 v3.0 测试阶段正式开启！测试周期内请关注文档更新与反馈渠道，正式发布敬请期待～",
-  // },
-];
+export const festivalConfigList: FestivalConfig[] = [];
 
 export { buildBuiltinSolarFestivals } from "./festival.builtin";

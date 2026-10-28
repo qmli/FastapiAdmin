@@ -34,13 +34,11 @@ const sections = computed<Section[]>(() => isEn.value
         { id: 'end-to-end-web', label: 'Web Admin' },
         { id: 'end-to-end-gen', label: 'AI Generator' },
         { id: 'end-to-end-api', label: 'FastAPI Backend' },
-        { id: 'end-to-end-app', label: 'Mobile' },
       ]
     : [
         { id: 'end-to-end-web', label: 'Web 管理' },
         { id: 'end-to-end-gen', label: 'AI 生成' },
         { id: 'end-to-end-api', label: 'FastAPI 后端' },
-        { id: 'end-to-end-app', label: '移动端' },
       ]
 )
 

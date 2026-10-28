@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
@@ -141,28 +141,6 @@ class StreamResponse(StreamingResponse):
             headers=headers,  # 文件名
             background=background,  # 文件大小
         )
-
-
-class RedirectContentResponse(RedirectResponse):
-    """重定向响应类"""
-
-    def __init__(
-        self,
-        url: str,
-        status_code: int = status.HTTP_302_FOUND,
-        headers: Mapping[str, str] | None = None,
-    ) -> None:
-        """初始化重定向响应类
-
-        参数:
-        - url (str): 重定向目标 URL。
-        - status_code (int): HTTP 状态码（默认 302）。
-        - headers (Mapping[str, str] | None): 响应头。
-
-        返回:
-        - None
-        """
-        super().__init__(url, status_code, headers)
 
 
 class UploadFileResponse(FileResponse):

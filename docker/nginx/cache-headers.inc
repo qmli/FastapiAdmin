@@ -1,4 +1,4 @@
-# 静态资源长缓存 + 隐藏文件防护。被 nginx.conf 的 /web、/app location include。
+# 静态资源长缓存 + 隐藏文件防护。被 nginx.conf 的 /web location include。
 # 撤销：删除本文件 + 移除 nginx.conf 中对应 include 行，然后重建 nginx。
 location ~ /\. {
     deny all;

@@ -12,10 +12,7 @@
         :key="step.id"
         :id="step.anchor"
         class="endtoend-step"
-        :class="[
-          'endtoend-step--' + (i % 2 === 0 ? 'left' : 'right'),
-          step.imageKind === 'mobile' ? 'endtoend-step--mobile' : '',
-        ]"
+        :class="'endtoend-step--' + (i % 2 === 0 ? 'left' : 'right')"
       >
         <div class="endtoend-step-content">
           <span class="endtoend-step-num">{{ t.stepLabel }} {{ String(i + 1).padStart(2, '0') }}</span>
@@ -91,8 +88,6 @@ interface Step {
   desc: string
   features: string[]
   images: StepImage[]
-  /** "mobile" = 移动端竖屏截图,等宽横排;其他桌面截图按内容比例展示 */
-  imageKind?: 'mobile' | 'desktop'
 }
 
 const t = computed(() =>
@@ -100,17 +95,17 @@ const t = computed(() =>
     ? {
         label: 'End-to-End Showcase',
         eyebrow: 'Full-Stack, End-to-End',
-        title: 'One Stack, All Surfaces',
+        title: 'One Stack, End to End',
         subtitle:
-          'Web management, AI code generation, FastAPI async backend, UniApp mobile — built from one codebase, deployed in days.',
+          'Web management, AI code generation, and a FastAPI async backend — built as one stack, deployed in days.',
         stepLabel: 'Stage',
       }
     : {
         label: '全栈贯通',
         eyebrow: '全栈贯通',
-        title: '一套代码,全端覆盖',
+        title: '一套代码,前后端打通',
         subtitle:
-          'Web 管理后台 / AI 代码生成 / FastAPI 异步后端 / UniApp 移动端,从底层到终端一栈打通。',
+          'Web 管理后台 / AI 代码生成 / FastAPI 异步后端,从底层到页面一栈打通。',
         stepLabel: '阶段',
       }
 )
@@ -161,23 +156,6 @@ const steps = computed<Step[]>(() =>
             { src: '/showcase/login.webp', alt: 'FastAPI Login and API auth' },
           ],
         },
-        {
-          id: 4,
-          anchor: 'end-to-end-app',
-          title: 'UniApp Mobile',
-          desc: 'One codebase, four outputs. UniApp + Vue3 + Wot Design → H5, WeChat, Alipay mini-programs, native App.',
-          features: [
-            'Single codebase → 4 platforms',
-            'Built-in mobile RBAC',
-            'Real-time push notifications',
-          ],
-          imageKind: 'mobile',
-          images: [
-            { src: '/showcase/app_home.png', alt: 'FastApiAdmin Mobile Home' },
-            { src: '/showcase/app_login.png', alt: 'FastApiAdmin Mobile Login' },
-            { src: '/showcase/app_mine.png', alt: 'FastApiAdmin Mobile Profile' },
-          ],
-        },
       ]
     : [
         {
@@ -223,23 +201,6 @@ const steps = computed<Step[]>(() =>
             { src: '/showcase/login.webp', alt: 'FastAPI 登录与 API 认证' },
           ],
         },
-        {
-          id: 4,
-          anchor: 'end-to-end-app',
-          title: 'UniApp 移动端',
-          desc: '一套代码,4 端输出。UniApp + Vue3 + Wot Design → H5 / 微信小程序 / 支付宝小程序 / 原生 App。',
-          features: [
-            '一套代码 4 个平台',
-            '内置移动端 RBAC',
-            '实时消息推送',
-          ],
-          imageKind: 'mobile',
-          images: [
-            { src: '/showcase/app_home.png', alt: 'FastApiAdmin 移动端首页' },
-            { src: '/showcase/app_login.png', alt: 'FastApiAdmin 移动端登录' },
-            { src: '/showcase/app_mine.png', alt: 'FastApiAdmin 个人中心' },
-          ],
-        },
       ]
 )
 
@@ -274,7 +235,7 @@ const lightboxNext = () => {
 <style scoped>
 /* ============================================================================
  * EndToEndShowcase — Linear 风格 S 型 alternate 布局
- * 4 段(偶数:内容在左,图在右;奇数:图在左,内容在右)
+ * 3 段(偶数:内容在左,图在右;奇数:图在左,内容在右)
  * 每段配齐该阶段全部产品截图,每个阶段对应一个锚点(SectionNav)
  * 移动端 (≤960px) 全部堆叠成 vertical flow
  * ============================================================================ */
@@ -466,18 +427,6 @@ const lightboxNext = () => {
   object-fit: cover;
 }
 
-/* 移动端阶段:竖屏截图等宽横排(真机比例,不裁切) */
-.endtoend-step--mobile .endtoend-step-images {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.endtoend-step--mobile .endtoend-step-images img {
-  aspect-ratio: auto;
-  height: auto;
-  object-fit: contain;
-}
-
 /* 标题下的 brand 渐变强调线 */
 .endtoend-header .endtoend-title {
   position: relative;
@@ -520,13 +469,8 @@ const lightboxNext = () => {
     order: 2;
   }
 
-  /* 桌面截图在小屏堆叠,手机截图仍横排 */
   .endtoend-step-images {
     grid-template-columns: 1fr;
-  }
-  .endtoend-step--mobile .endtoend-step-images {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
   }
 
   .endtoend-step-title {
@@ -535,12 +479,6 @@ const lightboxNext = () => {
 
   .endtoend-header {
     margin-bottom: 3rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .endtoend-step--mobile .endtoend-step-images {
-    gap: 0.375rem;
   }
 }
 

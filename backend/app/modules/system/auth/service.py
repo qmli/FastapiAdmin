@@ -165,9 +165,13 @@ class LoginService:
             return
         key = f"login_rate_limit:{request_ip}"
         try:
-            count = await redis.incr(key)
-            if count == 1:
-                await redis.expire(key, settings.LOGIN_RATE_LIMIT_WINDOW_SECONDS)
+            # lqm rm 原 Redis 固定窗口（incr/expire）已注释，不是删除。当前计数写入数据库。
+            from app.core.db_cache import cache_incr
+
+            count = await cache_incr(key, settings.LOGIN_RATE_LIMIT_WINDOW_SECONDS)
+            # count = await redis.incr(key)
+            # if count == 1:
+            #     await redis.expire(key, settings.LOGIN_RATE_LIMIT_WINDOW_SECONDS)
             if count > settings.LOGIN_RATE_LIMIT_MAX_ATTEMPTS:
                 raise CustomException(msg="登录尝试过于频繁，请稍后再试")
         except CustomException:

@@ -3,10 +3,10 @@
     <div class="fa-card-header">
       <div class="title">
         <h4 class="text-2xl">
-          <span>12%</span>
+          <span>89%</span>
           <FaSvgIcon icon="ri:arrow-right-up-line" class="text-success text-lg ml-1" />
         </h4>
-        <p>增长</p>
+        <p>构建成功率</p>
       </div>
     </div>
 
@@ -15,7 +15,7 @@
       :showAxisLabel="false"
       :showAxisLine="false"
       :showSplitLine="false"
-      :data="[50, 85, 65, 95, 75, 130, 180]"
+      :data="[82, 84, 83, 86, 87, 88, 89]"
       barWidth="16px"
       height="5rem"
     />

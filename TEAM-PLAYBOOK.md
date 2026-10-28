@@ -81,7 +81,6 @@ cd backend && UV_CACHE_DIR=/tmp/uv-cache-test uv run --no-sync pytest -q
 cd backend && UV_CACHE_DIR=/tmp/uv-cache-test uv run --no-sync ruff check
 # 前端
 cd frontend/web && pnpm run type-check && pnpm run test
-cd frontend/app && pnpm run type-check
 ```
 
 注意：`frontend/web/src/types/*.d.ts` 由 unplugin-* 在 vite 运行时生成且**不入库**，
@@ -119,7 +118,7 @@ create({ approval: "required", description: "<本次目标>", plan: {
   ],
   tasks: [ // 七个 kind=work 只读任务，各自写一份报告文件；均不可改代码/启服务/提交
     { id: "a1", subject: "后端架构与代码质量审计", assignee: "后端架构师",   description: "只读；产出 backend/audit-backend.md（文件:行号 + 证据 + 优先级）" },
-    { id: "a2", subject: "前端与移动端审计",       assignee: "前端工程师",   description: "只读；产出 frontend/audit-frontend.md" },
+    { id: "a2", subject: "前端审计",               assignee: "前端工程师",   description: "只读；产出 frontend/audit-frontend.md" },
     { id: "a3", subject: "测试与可验证性审计",     assignee: "测试工程师",   description: "只读；产出 backend/audit-testing.md（含实跑结果）" },
     { id: "a4", subject: "安全审计",               assignee: "安全审计员",   description: "只读；产出 backend/audit-security.md" },
     { id: "a5", subject: "Docker 与部署审计",      assignee: "运维工程师",   description: "只读；产出 docker/audit-deploy.md" },

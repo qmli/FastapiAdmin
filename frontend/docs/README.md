@@ -25,7 +25,6 @@ frontend/docs/
 │   │   ├── why.md           # 为什么选择 FastapiAdmin
 │   │   ├── frontend.md      # 前端开发
 │   │   ├── backend.md       # 后端开发
-│   │   ├── miniprogram.md   # 移动端开发
 │   │   ├── guidelines.md    # 开发规范
 │   │   ├── changelog.md     # 更新日志
 │   │   └── deployment.md    # 部署指南

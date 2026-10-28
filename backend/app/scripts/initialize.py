@@ -85,6 +85,9 @@ class InitializeData:
             await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
             logger.info("✅ 数据库迁移已应用（alembic upgrade head）")
 
+        # 已有库不会走 create_all。先补上 sys_cache，避免 dev 自动迁移把这张表当成模型漂移再生成一份迁移。
+        await InitializeData.__ensure_sys_cache_table()
+
         # dev 环境：模型有变更时自动生成迁移文件（无变更时 env.py 的 process_revision_directives 会拦截，不产出文件）
         if settings.ENVIRONMENT == EnvironmentEnum.DEV:
             autogen = await asyncio.to_thread(InitializeData.__autogen_migration, alembic_cfg)
@@ -95,6 +98,14 @@ class InitializeData:
             elif autogen is False:
                 # 仅"无模型变更"才打此日志；失败/拦截（None）已由 warning/error 说明，不再输出易误导的 info
                 logger.info("✅ dev 环境自动迁移检查完成（模型无变更）")
+
+    @staticmethod
+    async def __ensure_sys_cache_table() -> None:
+        """确保 sys_cache 存在。Redis 关闭后会话和缓存直接写这张表。"""
+        from app.core.kvstore.model import SysCacheModel
+
+        async with async_engine.begin() as conn:
+            await conn.run_sync(lambda sync_conn: SysCacheModel.__table__.create(sync_conn, checkfirst=True))
 
     @staticmethod
     async def __clear_unresolvable_alembic_version(alembic_cfg) -> None:

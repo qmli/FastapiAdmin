@@ -28,7 +28,7 @@ docker/                     # 唯一部署目录，不含业务源码
 │   ├── cache-headers.inc   # 静态资源长缓存片段
 │   ├── acme/               # ACME http-01 校验目录
 │   ├── ssl/                # 证书与私钥（600，不入库）
-│   └── {web,app,docs}/dist # 三端静态成品（由本地构建后上传）
+│   └── {web,docs}/dist     # 静态成品（由本地构建后上传）
 └── mysql/ redis/           # 初始化 SQL 与 redis.conf
 backups/                    # 部署前自动备份（每类保留 5 份）
 ```
@@ -43,13 +43,12 @@ backups/                    # 部署前自动备份（每类保留 5 份）
 
 ```bash
 ./deploy-artifacts.sh web        # 构建并部署 Web 管理后台
-./deploy-artifacts.sh app        # 构建并部署移动端 H5
 ./deploy-artifacts.sh backend    # 本地构建 MySQL 版镜像 → 传输 → 只重建 backend
-./deploy-artifacts.sh all        # 三样全发
-./deploy-artifacts.sh verify     # 公网四端验证
+./deploy-artifacts.sh all        # Web + 后端一起发
+./deploy-artifacts.sh verify     # 公网站点验证
 ./deploy-artifacts.sh backups    # 列出服务器备份
 ./deploy-artifacts.sh prune      # 轮转清理旧备份与旧镜像
-./deploy-artifacts.sh rollback web|app|backend
+./deploy-artifacts.sh rollback web|backend
 ```
 
 要点：
@@ -84,7 +83,7 @@ backups/                    # 部署前自动备份（每类保留 5 份）
 ## 4. 运行状态与巡检
 
 - **每日巡检**：`systemctl list-timers fa-health-check.timer`（每天 08:30，带 5 分钟随机延迟）
-- 巡检内容：4 个容器健康、`/api/v1/monitor/health/check` 与 `/web/`、`/app/` 可用性、证书剩余天数、磁盘、swap、备份与镜像堆积
+- 巡检内容：4 个容器健康、`/api/v1/monitor/health/check` 与 `/web/` 可用性、证书剩余天数、磁盘、swap、备份与镜像堆积
 - 结果：`/var/log/fa-health.log`；有告警时写入 syslog（`journalctl -t fa-health`）且服务退出码非 0
 - 手动执行：`systemctl start fa-health-check.service && tail -n 30 /var/log/fa-health.log`
 

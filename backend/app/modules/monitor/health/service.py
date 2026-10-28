@@ -28,15 +28,17 @@ class HealthService:
 
     @classmethod
     async def check_redis(cls, redis: Any | None) -> int:
-        """Redis 连通：PING 成功返回 1，失败返回 0。"""
-        if redis is None:
-            return 0
-        try:
-            await redis.ping()
-            return 1
-        except Exception as e:
-            logger.warning(f"Redis 连通检查失败: {e}")
-            return 0
+        """Redis 连通。PING 已注释（lqm rm），不是删除；当前不探测，记为正常（缓存走数据库）。"""
+        return 1
+        # lqm rm 原 Redis PING（已注释，不是删除）。恢复时取消下面注释，并删除上面的 return。
+        # if redis is None:
+        #     return 0
+        # try:
+        #     await redis.ping()
+        #     return 1
+        # except Exception as e:
+        #     logger.warning(f"Redis 连通检查失败: {e}")
+        #     return 0
 
     @classmethod
     async def collect(cls, redis: Any | None) -> ServiceInfoOut:

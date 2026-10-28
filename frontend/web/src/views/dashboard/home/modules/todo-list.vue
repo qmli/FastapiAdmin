@@ -2,10 +2,10 @@
   <div class="fa-card p-5 h-138 overflow-hidden">
     <div class="fa-card-header">
       <div class="title">
-        <h4>待办事项</h4>
+        <h4>构建待办</h4>
         <p>
           待处理
-          <span class="text-danger">3</span>
+          <span class="text-danger">{{ pendingCount }}</span>
         </p>
       </div>
     </div>
@@ -18,94 +18,64 @@
       >
         <div>
           <p class="text-sm">
-            <span class="text-g-800 font-medium">{{ item.username }}</span>
-            <span class="mx-2 text-g-600">{{ item.type }}</span>
+            <span class="text-g-800 font-medium">{{ item.owner }}</span>
+            <span class="mx-2 text-g-600">{{ item.action }}</span>
             <span class="text-theme">{{ item.target }}</span>
           </p>
-          <p class="text-g-500 mt-1">{{ item.date }}</p>
+          <p class="text-g-500 mt-1">{{ item.time }}</p>
         </div>
-        <ElCheckbox v-model="item.complate" />
+        <ElCheckbox v-model="item.done" />
       </div>
     </ElScrollbar>
   </div>
 </template>
 
 <script setup lang="ts">
-interface TodoItem {
-  username: string;
-  date: string;
-  complate: boolean;
-  type: string;
+interface BuildTodo {
+  owner: string;
+  time: string;
+  done: boolean;
+  action: string;
   target: string;
 }
 
-/**
- * 待办事项列表
- * 记录每日工作任务及完成状态
- */
-const list = reactive<TodoItem[]>([
+const list = reactive<BuildTodo[]>([
   {
-    username: "张无忌",
-    date: "上午 09:30",
-    complate: true,
-    type: "查看",
-    target: "查看今天工作内容",
+    owner: "编译",
+    time: "上午 09:18",
+    done: false,
+    action: "重试",
+    target: "#BSW-1048",
   },
   {
-    username: "赵敏",
-    date: "上午 10:30",
-    complate: true,
-    type: "回复",
-    target: "回复邮件",
+    owner: "打包",
+    time: "上午 10:05",
+    done: false,
+    action: "签名",
+    target: "#PKG-241",
   },
   {
-    username: "小昭",
-    date: "上午 11:00",
-    complate: true,
-    type: "工作",
-    target: "工作汇报整理",
+    owner: "构建",
+    time: "上午 11:20",
+    done: false,
+    action: "确认",
+    target: "#BLD-780",
   },
   {
-    username: "金毛狮王",
-    date: "下午 02:00",
-    complate: false,
-    type: "会议",
-    target: "产品需求会议",
+    owner: "制品库",
+    time: "上午 08:40",
+    done: true,
+    action: "发布",
+    target: "bsw-core 2.4.1",
   },
   {
-    username: "金花婆婆",
-    date: "下午 03:30",
-    complate: false,
-    type: "会议",
-    target: "整理会议内容",
-  },
-  {
-    username: "张三丰",
-    date: "下午 06:30",
-    complate: false,
-    type: "计划",
-    target: "明天工作计划",
-  },
-  {
-    username: "王思聪",
-    date: "下午 06:30",
-    complate: false,
-    type: "计划",
-    target: "明天工作内容",
-  },
-  {
-    username: "范小荷",
-    date: "下午 06:30",
-    complate: false,
-    type: "计划",
-    target: "一起去看电影",
-  },
-  {
-    username: "张无忌",
-    date: "下午 06:30",
-    complate: false,
-    type: "计划",
-    target: "练习乾坤大挪移",
+    owner: "编译",
+    time: "上午 08:10",
+    done: true,
+    action: "查看",
+    target: "#CC-019",
   },
 ]);
+
+const pendingCount = computed(() => list.filter((item) => !item.done).length);
 </script>

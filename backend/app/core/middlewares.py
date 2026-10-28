@@ -76,7 +76,7 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
     async def _load_config(request: Request) -> dict:
         """加载中间件配置，失败时返回全部默认值。"""
         redis = getattr(request.app.state, "redis", None)
-        if not redis:
+        if settings.REDIS_ENABLE and not redis:
             return {SysParamKey.DEMO_ENABLE: False, SysParamKey.IP_WHITE_LIST: (), SysParamKey.IP_BLACK_LIST: ()}
         try:
             config_keys = [

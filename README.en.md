@@ -4,7 +4,7 @@
      </p>
      <h1>FastApiAdmin <sup style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.4em; vertical-align: super; margin-left: 5px;">v3.0.0</sup></h1>
      <h3>🚀 Exceptional Code Quality, Production-Ready Admin Dashboard in 5 Minutes</h3>
-     <p>Full-stack rapid development platform powered by <b>FastAPI + Vue3 + TypeScript</b>. Web, H5, and Mini Program — all in one project.</p>
+     <p>Full-stack rapid development platform powered by <b>FastAPI + Vue3 + TypeScript</b>. Production-ready admin, out of the box.</p>
      <p align="center">
           <a href="https://github.com/fastapiadmin/FastapiAdmin.git" target="_blank">
                <img src="https://img.shields.io/github/stars/fastapiadmin/FastapiAdmin?style=social" alt="GitHub Stars">
@@ -44,14 +44,6 @@ English | [简体中文](./README.md)
 
 ![Dashboard](frontend/web/public/dashboard.png)
 
-**Mobile (H5 / Mini Program / App from one codebase)**
-
-<p>
-<img src="frontend/web/public/app_login.png" width="180" />
-<img src="frontend/web/public/app_home.png" width="180" />
-<img src="frontend/web/public/app_mine.png" width="180" />
-</p>
-
 ## 💡 Why FastapiAdmin?
 
 | You Need | FastapiAdmin | Django Admin | Frontend-Only |
@@ -60,7 +52,6 @@ English | [简体中文](./README.md)
 | ⚡ **FastAPI async** high-performance backend | ✅ | ❌ Sync-first | ❌ No backend |
 | 🔐 **RBAC** menu/button/data level permissions | ✅ | ❌ Basic | ❌ |
 | 🤖 **Code generator** (table → full CRUD) | ✅ | ❌ | ❌ |
-| 📱 **Mobile** (H5 + Mini Program) included | ✅ | ❌ | ❌ |
 | 🐳 **Docker** one-click deploy (Nginx + SSL) | ✅ | ❌ | ❌ |
 
 > 👉 Full comparison: [Why FastapiAdmin?](https://service.fastapiadmin.com/en/guide/why)
@@ -70,7 +61,6 @@ English | [简体中文](./README.md)
 | | URL | Account |
 |---|-----|---------|
 | 💻 Web | [service.fastapiadmin.com/web](https://service.fastapiadmin.com/web) | `admin` / `123456` |
-| 📱 Mobile | [service.fastapiadmin.com/app](https://service.fastapiadmin.com/app) | `admin` / `123456` |
 | 📖 Official Docs | [service.fastapiadmin.com](https://service.fastapiadmin.com) | No login |
 
 ## 🚀 5-Minute Quick Start
@@ -113,7 +103,6 @@ FastapiAdmin/            # Monorepo full-stack project
 ├─ backend/              # FastAPI backend (Pydantic 2.0 + SQLAlchemy + Alembic)
 ├─ frontend/
 │   ├── web/             # Vue3 Web (Element Plus + TypeScript)
-│   ├── app/             # UniApp Mobile (H5 + Mini Program + App)
 │   └── docs/            # VitePress documentation
 ├─ docker/               # Docker Compose deploy (Nginx + SSL)
 ├─ deploy.sh             # One-click deploy script
@@ -169,7 +158,7 @@ ENABLED_MODULES = ["generator", "task", "storage"]
 ## 📖 Documentation
 
 - 🌐 [Official Docs](https://service.fastapiadmin.com) — Full guides, architecture, custom development
-- 📁 Sub-project READMEs: [backend](backend/README.md) · [web](frontend/web/README.md) · [mobile](frontend/app/README.md) · [Docker](docker/README.md)
+- 📁 Sub-project READMEs: [backend](backend/README.md) · [web](frontend/web/README.md) · [Docker](docker/README.md)
 
 ## 🤝 Contributing
 
@@ -200,5 +189,4 @@ Issues and PRs are welcome! See [Contributing Guide](https://service.fastapiadmi
 
 - Backend: [FastAPI](https://fastapi.tiangolo.com/) · [Pydantic](https://docs.pydantic.dev/) · [SQLAlchemy](https://www.sqlalchemy.org/) · [APScheduler](https://github.com/agronholm/apscheduler)
 - Frontend: [Vue3](https://vuejs.org/) · [TypeScript](https://www.typescriptlang.org/) · [Vite](https://vitejs.dev/) · [Element Plus](https://element-plus.org/)
-- Mobile: [UniApp](https://uniapp.dcloud.net.cn/) · [Wot Design Uni](https://wot-ui.cn/)
 - AI: [Agno](https://github.com/agno-agi/agno)
