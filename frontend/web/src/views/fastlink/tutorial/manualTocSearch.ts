@@ -26,7 +26,6 @@ export const MANUAL_PAGE_SEARCH_ALIASES: Readonly<Record<string, readonly string
   "page-workflow": ["工作流", "流程", "编排"],
   "page-nodetype": ["节点类型", "编排"],
   "page-ai-chat": ["AI 聊天", "聊天", "chat"],
-  "page-ai-fachat": ["FA 聊天", "fachat"],
   "page-ai-memory": ["记忆管理", "memory"],
   "page-portal": ["应用门户", "portal"],
   "page-demo": ["示例", "demo"],

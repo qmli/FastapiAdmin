@@ -203,10 +203,6 @@
                                 AI智能助手
                               </ElLink>
                               ·
-                              <ElLink href="#page-ai-fachat" type="primary" underline="never">
-                                会话聊天
-                              </ElLink>
-                              ·
                               <ElLink href="#page-ai-memory" type="primary" underline="never">
                                 会话记忆
                               </ElLink>
@@ -1130,7 +1126,6 @@ const MANUAL_TOC: ManualModule[] = [
     title: "四、AI 模块",
     pages: [
       { anchor: "page-ai-chat", title: "AI智能助手" },
-      { anchor: "page-ai-fachat", title: "会话聊天" },
       { anchor: "page-ai-memory", title: "会话记忆" },
     ],
   },

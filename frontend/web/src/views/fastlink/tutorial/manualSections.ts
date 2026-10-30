@@ -240,15 +240,6 @@ export const MANUAL_MODULES_AFTER_SYSTEM: ManualModuleSection[] = [
         ],
       },
       {
-        anchor: "page-ai-fachat",
-        title: "会话聊天",
-        path: "module_ai/fachat/index.vue",
-        notes: [
-          "布局：左侧联系人列表（搜索、排序下拉、在线点）；右侧头部「Art Bot」状态与语音/视频等图标按钮；中部消息气泡列表；底部输入框与发送。",
-          "完整性：选人切换会话、发送消息、滚动消息区；当前多为演示数据与本地发送逻辑。",
-        ],
-      },
-      {
         anchor: "page-ai-memory",
         title: "会话记忆",
         path: "module_ai/memory/index.vue",

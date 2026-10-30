@@ -34,7 +34,6 @@ vi.mock("@views/fastlink/current/profile.vue", () => ({ default: { name: "Fastli
 vi.mock("@views/fastlink/changelog/index.vue", () => ({ default: { name: "FastlinkChangelog" } }));
 vi.mock("@views/fastlink/pricing/index.vue", () => ({ default: { name: "FastlinkPricing" } }));
 vi.mock("@views/fastlink/tutorial/index.vue", () => ({ default: { name: "FastlinkTutorial" } }));
-vi.mock("@views/fastlink/fachat/index.vue", () => ({ default: { name: "FastlinkFachat" } }));
 
 type AnyRoute = {
   path?: string;

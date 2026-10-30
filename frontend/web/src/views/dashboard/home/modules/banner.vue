@@ -6,7 +6,6 @@
         <div class="solution-slide__content">
           <p class="solution-slide__title">{{ slide.title }}</p>
           <p class="solution-slide__subtitle">{{ slide.subtitle }}</p>
-          <span class="solution-slide__button">查看详情</span>
         </div>
       </a>
     </ElCarouselItem>
@@ -86,25 +85,10 @@ const slides = [
   }
 
   &__subtitle {
-    margin: 0 0 1.25rem;
+    margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
     opacity: 0.92;
-  }
-
-  &__button {
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    min-width: 80px;
-    height: var(--el-component-custom-height);
-    padding: 0 12px;
-    font-size: 14px;
-    color: #333;
-    background: #fff;
-    border-radius: 6px;
   }
 }
 
@@ -123,7 +107,6 @@ const slides = [
 
     &__subtitle {
       display: -webkit-box;
-      margin-bottom: 0.75rem;
       overflow: hidden;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;

@@ -54,9 +54,9 @@ class AgnoFactory:
                 temperature = float(model_config["temperature"])
 
         # 创建 Agent
-        fastapiadmin_agent = Agent(
+        iSoft_agent = Agent(
             id=user_id,
-            name="fastapiadmin_agent",
+            name="iSoft_agent",
             role="You are a helpful AI assistant",
             description=self.AGENT_DESCRIPTION,
             tools=[],
@@ -74,7 +74,7 @@ class AgnoFactory:
                 temperature=temperature,
                 timeout=self.REQUEST_TIMEOUT,
             ),
-            members=[fastapiadmin_agent],
+            members=[iSoft_agent],
             instructions=self.AGENT_INSTRUCTIONS,
             expected_output=self.AGENT_EXPECTED_OUTPUT,
             add_datetime_to_context=True,
